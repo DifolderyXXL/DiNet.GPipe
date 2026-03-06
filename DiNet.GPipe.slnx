@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="DiNet.GPipe.Domain/DiNet.GPipe.Domain.csproj" />
+  <Project Path="DiNet.GPipe.Scheduler/DiNet.GPipe.Scheduler.csproj" />
+  <Project Path="DiNet.GPipe/DiNet.GPipe.csproj" />
+</Solution>
