@@ -18,7 +18,7 @@ public class CheckIfBranchExists(Repository c_repository, LocalRepositoryConfig 
 
     public PipeActionResult Run()
     {
-        if(_repository.Branches.Any(x => x.CanonicalName == _config.branch))
+        if(_repository.Branches.Any(x => x.FriendlyName == _config.branch))
             return PipeActionResult.Success;
 
         return PipeActionResult.Failure;
@@ -34,16 +34,20 @@ public class CheckIfUpdates(Repository c_repository, LocalRepositoryConfig c_con
 
     public PipeActionResult Run()
     {
-        var branch = _repository.Branches.FirstOrDefault(x => x.CanonicalName == _config.branch);
+        var branch = _repository.Branches.FirstOrDefault(x => x.FriendlyName == _config.branch);
 
         if(branch == null)
             return PipeActionResult.Failure;
 
-        var commit = branch.Commits.Last();
-        if (_previousSha != null && _previousSha != commit.Sha)
+
+        var commit = branch.Reference.TargetIdentifier;
+        var isSucceded = _previousSha != null && _previousSha != commit;
+
+        _previousSha = commit;
+
+        if (isSucceded)
             return PipeActionResult.Success;
 
-        _previousSha = commit.Sha;
 
         return PipeActionResult.Failure;
     }

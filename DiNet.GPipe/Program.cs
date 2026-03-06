@@ -7,26 +7,24 @@ using DiNet.GPipe.Scheduler.Primitives;
 using DiNet.GPipe.Scheduler.Running;
 using LibGit2Sharp;
 
+var config = new LocalRepositoryConfig(
+    "C:/TestRepositories/Test", 
+    "release");
 
-var path = "~/";
-var repository = new Repository();
+var repository = new Repository(config.path);
 
+Console.WriteLine(string.Join("\n", repository.Branches.Select(x=>x.FriendlyName)));
 
 
 var runner = new ScheduleRunner();
 var pipeline = PipelineBuilder.Create()
-    .Action(new CheckIfBranchExists("A"))
-    .Action(new PipelineCheckerAction("B"))
+    .Action(new CheckIfBranchExists(repository, config))
+    .Action(new CheckIfUpdates(repository, config))
+    .Action(new LogMessageAction("Updated"))
     .Build();
 
-runner.Add(new Schedule(pipeline, TimeSpan.FromSeconds(5)));
+var s = runner.Add(new Schedule(pipeline, TimeSpan.FromSeconds(3)));
 
-var pipeline2 = PipelineBuilder.Create()
-    .Action(new PipelineCheckerAction("oe1"))
-    .Action(new PipelineCheckerAction("oe2", 2))
-    .Build();
-
-var s = runner.Add(new Schedule(pipeline2, TimeSpan.FromSeconds(3), new(ScheduleExceptionPolicy.Destroy)));
 
 s.OnException += e => Console.WriteLine(e.Message);
 
