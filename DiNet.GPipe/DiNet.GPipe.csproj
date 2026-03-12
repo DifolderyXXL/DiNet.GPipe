@@ -12,7 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DiNet.GPipe.Concurrency\DiNet.GPipe.Concurrency.csproj" />
+    <ProjectReference Include="..\DiNet.GPipe.JavaBuilder\DiNet.GPipe.JavaBuilder.csproj" />
     <ProjectReference Include="..\DiNet.GPipe.Scheduler\DiNet.GPipe.Scheduler.csproj" />
+    <ProjectReference Include="..\DiNet.GPipe.Storaging\DiNet.GPipe.Storaging.csproj" />
   </ItemGroup>
 
 </Project>

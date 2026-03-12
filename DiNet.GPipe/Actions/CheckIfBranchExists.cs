@@ -1,5 +1,7 @@
-﻿using DiNet.GPipe.Scheduler.Interfaces;
+﻿using DiNet.GPipe.JavaBuilder;
+using DiNet.GPipe.Scheduler.Interfaces;
 using DiNet.GPipe.Scheduler.Primitives;
+using DiNet.GPipe.Storaging.Interfaces;
 using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
@@ -61,5 +63,30 @@ public class LogMessageAction(string message) : IPipeAction
     {
         Console.WriteLine(_message);
         return PipeActionResult.Success;
+    }
+}
+
+public class ApkBuildAction(TaskMonitor monitor, IFileStorage fileStorage, IApkBuilder apkBuilder) : IPipeAction
+{
+    private readonly IFileStorage _fileStorage = fileStorage;
+    private readonly IApkBuilder _apkBuilder = apkBuilder;
+
+    private TaskMonitor _taskMonitor = monitor;
+
+    public PipeActionResult Run()
+    {
+        if (_taskMonitor.Enqueue(RunAsync, default))
+            return PipeActionResult.Success;
+
+        return PipeActionResult.Failure;
+    }
+
+    private async Task RunAsync(CancellationToken token = default)
+    {
+        var destination = await _apkBuilder.BuildAsync(token);
+        if (destination == null)
+            return;
+
+        await _fileStorage.StoreFrom(destination, token);
     }
 }
