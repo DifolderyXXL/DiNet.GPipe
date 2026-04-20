@@ -5,6 +5,8 @@ using System.Text;
 namespace DiNet.GPipe.Storaging.Settings;
 
 public record ApkStorageSettings(
-    string path);
+    string path,
+    BuildFileNamingSettings NamingSettings);
 
+public record BuildFileNamingSettings(bool addDateTime, bool numerate);
 

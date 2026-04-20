@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/V2/">
+    <Project Path="DiNet.GPipe.BackgroundWorker/DiNet.GPipe.BackgroundWorker.csproj" Id="9e0b2fc9-471b-4050-9474-39e807849439" />
+    <Project Path="DiNet.GPipe.Tests/DiNet.GPipe.Tests.csproj" Id="26a4c58e-aced-45d4-8a1b-523ff226aa10" />
+  </Folder>
   <Project Path="DiNet.GPipe.Concurrency/DiNet.GPipe.Concurrency.csproj" Id="a59c066f-b156-491b-9396-105558be3b9a" />
   <Project Path="DiNet.GPipe.Domain/DiNet.GPipe.Domain.csproj" />
   <Project Path="DiNet.GPipe.JavaBuilder/DiNet.GPipe.JavaBuilder.csproj" Id="dda3515d-aaf6-4d95-89a5-4174aa261c45" />

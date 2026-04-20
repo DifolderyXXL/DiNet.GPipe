@@ -66,27 +66,57 @@ public class LogMessageAction(string message) : IPipeAction
     }
 }
 
-public class ApkBuildAction(TaskMonitor monitor, IFileStorage fileStorage, IApkBuilder apkBuilder) : IPipeAction
+public class IterationMessageAction(string message, int interaction) : IPipeAction
+{
+    private readonly string _message = message;
+    private readonly int _interaction = interaction;
+    private int _currentInteraction = 0;
+    public PipeActionResult Run()
+    {
+        _currentInteraction++;
+        if (_currentInteraction % _interaction == 0)
+        {
+            Console.WriteLine(_message);
+            _currentInteraction = 0;
+        }
+        
+        return PipeActionResult.Success;
+    }
+}
+
+
+public class ApkBuildAction(IFileStorage fileStorage, IApkBuilder apkBuilder) : IPipeAction
 {
     private readonly IFileStorage _fileStorage = fileStorage;
     private readonly IApkBuilder _apkBuilder = apkBuilder;
 
-    private TaskMonitor _taskMonitor = monitor;
-
     public PipeActionResult Run()
     {
-        if (_taskMonitor.Enqueue(RunAsync, default))
-            return PipeActionResult.Success;
+        var result = RunAsync();
+        result.Wait();
 
+        if (result.Result)
+            return PipeActionResult.Success;
         return PipeActionResult.Failure;
     }
 
-    private async Task RunAsync(CancellationToken token = default)
+    private async Task<bool> RunAsync(CancellationToken token = default)
     {
-        var destination = await _apkBuilder.BuildAsync(token);
-        if (destination == null)
-            return;
+        try
+        {
+            var destination = await _apkBuilder.BuildAsync(token);
+            if (destination == null)
+                return false;
 
-        await _fileStorage.StoreFrom(destination, token);
+            await _fileStorage.StoreFrom(destination, token);
+        }
+        catch (Exception ex)
+        { 
+            Console.WriteLine(ex.StackTrace);
+            return false;
+        }
+
+
+        return true;
     }
 }

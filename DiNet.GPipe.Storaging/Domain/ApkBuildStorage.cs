@@ -9,12 +9,39 @@ public class ApkBuildStorage(ApkStorageSettings settings) : IFileStorage
 
     public async Task StoreFrom(string filePath, CancellationToken token)
     {
-        var fileName = Path.GetFileName(filePath);
+        EnsureLocalDirectoryExists();
+
+        var fileName = GetTargetFileName(Path.GetFileName(filePath));
 
         using var fromFs = File.OpenRead(filePath);
 
         using var toFs = new FileStream(Path.Combine(_settings.path, fileName), FileMode.OpenOrCreate);
 
         await fromFs.CopyToAsync(toFs, token);
+    }
+
+    private string GetTargetFileName(string fileName)
+    {
+        if(settings.NamingSettings.addDateTime)
+        {
+            fileName += $"_{DateTime.UtcNow:yyyy-MM-dd_HH-mm-ss}";
+        }
+
+        if (settings.NamingSettings.numerate)
+        {
+            fileName += $"_cnt-{GetFileCount()+1}";
+        }
+
+        return fileName;
+    }
+
+    private int GetFileCount()
+    {
+        return Directory.GetFiles(_settings.path, "*", SearchOption.TopDirectoryOnly).Length;
+    }
+
+    private void EnsureLocalDirectoryExists()
+    {
+        Directory.CreateDirectory(_settings.path);
     }
 }

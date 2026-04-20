@@ -11,40 +11,37 @@ using DiNet.GPipe.Scheduler.Primitives;
 using DiNet.GPipe.Scheduler.Running;
 using DiNet.GPipe.Storaging.Domain;
 using DiNet.GPipe.Storaging.Interfaces;
+using DiNet.GPipe.Storaging.Settings;
 using LibGit2Sharp;
 
 
 var storage = @"C:\C#\Github\DiNet.GPipe\FetchedApkBuilds";
-var project = new AndroidStudioProjectSettings(@"C:\AndroidStudio\rctschedule", ApkBuildType.Debug);
+var projectPath = @"C:\AndroidStudio\rctschedule";
+var project = new AndroidStudioProjectSettings(projectPath, ApkBuildType.Debug);
 var jdk = new JdkSettings();
+var namingSettings = new BuildFileNamingSettings(true, true);
 
 IApkBuilder apkBuilder = new AndroidStudioApkBuilder(project, jdk);
-IFileStorage fileStorage = new ApkBuildStorage(new(Path.Combine(storage, "Debug")));
+IFileStorage fileStorage = new ApkBuildStorage(new(Path.Combine(storage, "Debug"), namingSettings));
 
-var taskMonitor = new TaskMonitor();
+//var taskMonitor = new TaskMonitor();
 
-Console.WriteLine(new ApkBuildAction(taskMonitor, fileStorage, apkBuilder).Run());
-
-taskMonitor.WaitAllTasksCompleted();
-
-return;
 var config = new LocalRepositoryConfig(
-    "C:/TestRepositories/Test", 
+    projectPath,
     "release");
 
 var repository = new Repository(config.path);
 
-Console.WriteLine(string.Join("\n", repository.Branches.Select(x=>x.FriendlyName)));
-
-
 var runner = new ScheduleRunner();
 var pipeline = PipelineBuilder.Create()
+    .Action(new IterationMessageAction("Iteration Batch;", 12))
     .Action(new CheckIfBranchExists(repository, config))
     .Action(new CheckIfUpdates(repository, config))
-    .Action(new LogMessageAction("Updated"))
+    .Action(new LogMessageAction("Updated, Running Apk Build"))
+    .Action(new ApkBuildAction(fileStorage, apkBuilder))
     .Build();
 
-var s = runner.Add(new Schedule(pipeline, TimeSpan.FromSeconds(3)));
+var s = runner.Add(new Schedule(pipeline, TimeSpan.FromSeconds(5)));
 
 
 s.OnException += e => Console.WriteLine(e.Message);
@@ -53,4 +50,6 @@ while (true)
 {
 
 }
+
+
 
