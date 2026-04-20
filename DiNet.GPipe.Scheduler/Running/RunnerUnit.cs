@@ -53,7 +53,7 @@ public class RunnerUnit : IDisposable
 
     private async Task InternalRun(CancellationToken token)
     {
-        while(!_cts!.IsCancellationRequested && await _timer!.WaitForNextTickAsync(token))
+        while (!_cts!.IsCancellationRequested && await _timer!.WaitForNextTickAsync(token))
         {
             try
             {

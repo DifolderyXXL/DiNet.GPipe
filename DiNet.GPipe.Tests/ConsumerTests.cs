@@ -1,7 +1,11 @@
 ﻿using DiNet.GPipe.BackgroundWorker.Apk;
 using DiNet.GPipe.BackgroundWorker.Apk.Consuming;
+using DiNet.GPipe.BackgroundWorker.Build;
+using DiNet.GPipe.BackgroundWorker.Common;
 using DiNet.GPipe.BackgroundWorker.Storage;
 using DiNet.GPipe.BackgroundWorker.Storage.Storing;
+using DiNet.GPipe.BackgroundWorker.Versioning;
+using Moq;
 
 namespace DiNet.GPipe.Tests;
 
@@ -48,8 +52,28 @@ public class ConsumerTests
     }
 
     [Fact]
-    public void StorageTest()
+    public async Task TestBuild()
     {
+        var mockRepository = new Mock<IBuildRepository>();
+        var mockStagingStorage = new Mock<IApkStagingStorage>();
+        var mockApkProvider = new Mock<IApkProviderApi>();
+        var versionService = new Mock<IVersionService>();
+
+        mockStagingStorage.Setup(_ => _.Store(It.IsAny<IApkFile>(), It.IsAny<BuildType>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new SystemApkFile("test"));
+
+        mockApkProvider.Setup(_ => _.Provide(It.IsAny<ApkProvideCommand>()))
+            .ReturnsAsync(new SystemApkFile("testapk"));
+
+        versionService.Setup(_ => _.Put(It.IsAny<BranchVersion>()))
+            .Returns(new BuildVersion(1,1,1));
+
+        
+        var buildService = new BuildService(mockRepository.Object, mockStagingStorage.Object, mockApkProvider.Object, versionService.Object);
+
+        await buildService.Build("N", "hs", BranchVersion.Release, default);
+
+        mockRepository.Verify(_ => _.Save(It.Is<BuildRecord>(m => m.BuildPath == "test")), Times.Once());
 
     }
 }
