@@ -2,6 +2,6 @@
 
 namespace DiNet.GPipe.BackgroundWorker.Apk;
 
-public record ApkProvideCommand(BuildType type);
+public record ApkProvideCommand(string directory, BuildType type);
 
 

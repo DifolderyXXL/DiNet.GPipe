@@ -1,7 +1,4 @@
 ﻿using DiNet.GPipe.BackgroundWorker.Common;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DiNet.GPipe.BackgroundWorker.Build;
 
@@ -20,7 +17,6 @@ public class BuildRecord
     public BuildStatus Status { get; set; }
     public string? Error { get; set; }
 }
-
 
 public interface IBuildRepository
 {

@@ -25,7 +25,7 @@ public class BranchData
 
 public class BranchCheckWorker(TimeSpan period,
                                BranchVersion versionType,
-                               IBuildService buildService,
+                               IHandleCommitVersionUpdate buildService,
                                ILocalBranch branch,
                                IDataRepository<BranchData> repository) : BackgroundService
 {

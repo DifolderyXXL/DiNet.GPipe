@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/V2/">
     <Project Path="DiNet.GPipe.BackgroundWorker/DiNet.GPipe.BackgroundWorker.csproj" Id="9e0b2fc9-471b-4050-9474-39e807849439" />
+    <Project Path="DiNet.GPipe.SharedKernel/DiNet.GPipe.SharedKernel.csproj" Id="45c5064c-f419-4bee-ba83-68bc74d53f56" />
     <Project Path="DiNet.GPipe.Tests/DiNet.GPipe.Tests.csproj" Id="26a4c58e-aced-45d4-8a1b-523ff226aa10" />
   </Folder>
   <Project Path="DiNet.GPipe.Concurrency/DiNet.GPipe.Concurrency.csproj" Id="a59c066f-b156-491b-9396-105558be3b9a" />

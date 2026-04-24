@@ -5,14 +5,15 @@ using DiNet.GPipe.BackgroundWorker.Versioning;
 namespace DiNet.GPipe.BackgroundWorker.Build;
 
 
-public interface IBuildService
+public interface IHandleCommitVersionUpdate
 {
     public Task Build(string branch, string commitHash, BranchVersion versionType, CancellationToken cancellationToken);
 }
 public class BuildService(IBuildRepository buildRepository,
                           IApkStagingStorage storage,
-                          IApkProviderApi api,
-                          IVersionService versionService) : IBuildService
+                          IWorkingDirectoryWorkspace workspace,
+                          IsolatedSpaceBuilder isolatedSpaceBuilder,
+                          IVersionService versionService) : IHandleCommitVersionUpdate
 {
     private readonly SemaphoreSlim _lock = new(1, 1);
     public async Task Build(string branch, string commitHash, BranchVersion versionType, CancellationToken cancellationToken)
@@ -21,9 +22,19 @@ public class BuildService(IBuildRepository buildRepository,
 
         try
         {
-            var apk = await api.Provide(new ApkProvideCommand(BuildType.Release));
+            var result = await isolatedSpaceBuilder.BuildIsolated(
+                workspace.WorkingDirectory, 
+                new BuildCommand(branch, commitHash), 
+                cancellationToken
+                );
 
-            apk = await storage.Store(apk, BuildType.Release, commitHash, cancellationToken);
+            if (result.IsError)
+            {
+                await buildRepository.CreateFailedRecord(null, commitHash, result.Error!.ToString());
+                return;
+            }
+
+            var apk = await storage.Store(result.Value!, BuildType.Release, commitHash, cancellationToken);
 
             var version = versionService.Put(versionType);
 
