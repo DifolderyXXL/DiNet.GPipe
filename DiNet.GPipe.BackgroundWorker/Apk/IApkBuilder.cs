@@ -1,8 +1,8 @@
-﻿using DiNet.GPipe.SharedKernel;
+﻿using DiNet.GPipe.SharedKernel.Results;
 
 namespace DiNet.GPipe.BackgroundWorker.Apk;
 
 public interface IApkBuilder
 {
-    public Task<Result<IApkFile>> Provide(ApkProvideCommand command, CancellationToken cancellationToken = default);
+    public Task<Result<IApkFile>> Build(ApkBuildCommand command, CancellationToken cancellationToken = default);
 }

@@ -1,4 +1,4 @@
-﻿namespace DiNet.GPipe.SharedKernel;
+﻿namespace DiNet.GPipe.SharedKernel.Results;
 
 public class Result
 {

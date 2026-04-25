@@ -1,4 +1,6 @@
-﻿namespace DiNet.GPipe.BackgroundWorker.Common;
+﻿using DiNet.GPipe.SharedKernel.Models;
+
+namespace DiNet.GPipe.BackgroundWorker.Common;
 
 public record ApkMetadata(BuildVersion version, BuildType buildType);
 

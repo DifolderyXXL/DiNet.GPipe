@@ -5,6 +5,7 @@ using DiNet.GPipe.BackgroundWorker.Common;
 using DiNet.GPipe.BackgroundWorker.Storage;
 using DiNet.GPipe.BackgroundWorker.Storage.Storing;
 using DiNet.GPipe.BackgroundWorker.Versioning;
+using DiNet.GPipe.SharedKernel.Models;
 using Moq;
 
 namespace DiNet.GPipe.Tests;
@@ -62,7 +63,7 @@ public class ConsumerTests
         mockStagingStorage.Setup(_ => _.Store(It.IsAny<IApkFile>(), It.IsAny<BuildType>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new SystemApkFile("test"));
 
-        mockApkProvider.Setup(_ => _.Provide(It.IsAny<ApkProvideCommand>()))
+        mockApkProvider.Setup(_ => _.Build(It.IsAny<ApkBuildCommand>()))
             .ReturnsAsync(new SystemApkFile("testapk"));
 
         versionService.Setup(_ => _.Put(It.IsAny<BranchVersion>()))

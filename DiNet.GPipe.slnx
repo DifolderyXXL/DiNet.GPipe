@@ -1,11 +1,13 @@
 <Solution>
   <Folder Name="/V2/">
+    <Project Path="DiNet.GPipe.Application/DiNet.GPipe.Application.csproj" Id="eea81197-2084-4475-a435-4b92d53692dc" />
     <Project Path="DiNet.GPipe.BackgroundWorker/DiNet.GPipe.BackgroundWorker.csproj" Id="9e0b2fc9-471b-4050-9474-39e807849439" />
+    <Project Path="DiNet.GPipe.Domain/DiNet.GPipe.Domain.csproj" />
+    <Project Path="DiNet.GPipe.Infrastructure/DiNet.GPipe.Infrastructure.csproj" Id="5bed1774-f07b-4955-8db6-518d3d048ddc" />
     <Project Path="DiNet.GPipe.SharedKernel/DiNet.GPipe.SharedKernel.csproj" Id="45c5064c-f419-4bee-ba83-68bc74d53f56" />
     <Project Path="DiNet.GPipe.Tests/DiNet.GPipe.Tests.csproj" Id="26a4c58e-aced-45d4-8a1b-523ff226aa10" />
   </Folder>
   <Project Path="DiNet.GPipe.Concurrency/DiNet.GPipe.Concurrency.csproj" Id="a59c066f-b156-491b-9396-105558be3b9a" />
-  <Project Path="DiNet.GPipe.Domain/DiNet.GPipe.Domain.csproj" />
   <Project Path="DiNet.GPipe.JavaBuilder/DiNet.GPipe.JavaBuilder.csproj" Id="dda3515d-aaf6-4d95-89a5-4174aa261c45" />
   <Project Path="DiNet.GPipe.Scheduler/DiNet.GPipe.Scheduler.csproj" />
   <Project Path="DiNet.GPipe.Storaging/DiNet.GPipe.Storaging.csproj" Id="064c34c3-76dd-479e-aa9b-06972a3b965e" />

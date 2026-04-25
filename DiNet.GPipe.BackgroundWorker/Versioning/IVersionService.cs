@@ -1,10 +1,11 @@
 ﻿using DiNet.GPipe.BackgroundWorker.Common;
+using DiNet.GPipe.SharedKernel.Models;
 
 namespace DiNet.GPipe.BackgroundWorker.Versioning;
 
 public interface IVersionService
 {
-    public Common.BuildVersion Put(BranchVersion version);
+    public BuildVersion Put(BranchVersion version);
 }
 
 

@@ -1,7 +1,7 @@
 ﻿using DiNet.GPipe.BackgroundWorker.Apk;
-using DiNet.GPipe.BackgroundWorker.Common;
 using DiNet.GPipe.BackgroundWorker.Git;
-using DiNet.GPipe.SharedKernel;
+using DiNet.GPipe.SharedKernel.Models;
+using DiNet.GPipe.SharedKernel.Results;
 
 namespace DiNet.GPipe.BackgroundWorker.Build;
 
@@ -14,7 +14,7 @@ public class IsolatedSpaceBuilder(IApkBuilder api, IGitRepositoryService gitRepo
     {
         await gitRepository.EnsureWorktreeCommit(workingDirectory, buildCommand.commitHash, cancellation);
 
-        var result = await api.Provide(new ApkProvideCommand(workingDirectory, BuildType.Release));
+        var result = await api.Build(new ApkBuildCommand(workingDirectory, BuildType.Release));
 
         return result;
     }
