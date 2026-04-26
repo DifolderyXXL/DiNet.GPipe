@@ -1,10 +1,10 @@
 ﻿using DiNet.GPipe.BackgroundWorker.Apk;
 using DiNet.GPipe.BackgroundWorker.Apk.Consuming;
-using DiNet.GPipe.BackgroundWorker.Build;
 using DiNet.GPipe.BackgroundWorker.Common;
 using DiNet.GPipe.BackgroundWorker.Storage;
 using DiNet.GPipe.BackgroundWorker.Storage.Storing;
 using DiNet.GPipe.BackgroundWorker.Versioning;
+using DiNet.GPipe.SharedKernel.Interfaces;
 using DiNet.GPipe.SharedKernel.Models;
 using Moq;
 
@@ -55,7 +55,7 @@ public class ConsumerTests
     [Fact]
     public async Task TestBuild()
     {
-        var mockRepository = new Mock<IBuildRepository>();
+        var mockRepository = new Mock<IBuildRegistryRepository>();
         var mockStagingStorage = new Mock<IApkStagingStorage>();
         var mockApkProvider = new Mock<IApkBuilder>();
         var versionService = new Mock<IVersionService>();
@@ -66,8 +66,8 @@ public class ConsumerTests
         mockApkProvider.Setup(_ => _.Build(It.IsAny<ApkBuildCommand>()))
             .ReturnsAsync(new SystemApkFile("testapk"));
 
-        versionService.Setup(_ => _.Put(It.IsAny<BranchVersion>()))
-            .Returns(new BuildVersion(1,1,1));
+        //versionService.Setup(_ => _.Put(It.IsAny<BranchVersion>()))
+        //    .Returns(new BuildVersion(1,1,1));
 
         /*
         var buildService = new BuildService(mockRepository.Object, mockStagingStorage.Object, mockApkProvider.Object, versionService.Object);

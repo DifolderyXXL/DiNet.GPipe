@@ -1,7 +1,6 @@
-﻿using DiNet.GPipe.SharedKernel;
-using DiNet.GPipe.SharedKernel.Models;
+﻿using DiNet.GPipe.Domain;
 
-namespace DiNet.GPipe.BackgroundWorker.Branches;
+namespace DiNet.GPipe.SharedKernel.Models.Commands;
 
 public record CommitDetected(
     string ProjectName,

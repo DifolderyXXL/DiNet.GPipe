@@ -1,4 +1,5 @@
-﻿using DiNet.GPipe.SharedKernel.Models;
+﻿using DiNet.GPipe.Domain;
+using DiNet.GPipe.SharedKernel.Models;
 
 namespace DiNet.GPipe.BackgroundWorker.Common;
 

@@ -25,13 +25,12 @@ public record Watcher(
     Guid Id, 
     string ProjectName,
     string GitUrl,
-    BranchConfig Branch,
+    List<BranchConfig> Branches,
     WatcherStatus Status
     );
-
-public record BranchConfig(string BranchName, BranchVersion VersionType, TimeSpan PollInterval);
 public record WatcherRequest(
     string ProjectName,
     string GitUrl,
-    List<BranchConfig> Branches
+    List<BranchConfig> Branches, 
+    TimeSpan PollInterval
     );

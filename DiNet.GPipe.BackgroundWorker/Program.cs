@@ -6,7 +6,7 @@ var builder = Host.CreateApplicationBuilder(args);
 //builder.Services.AddHostedService<Worker>();
 
 
-builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 
 //builder.Services.ConfigureOptions(new GitRepositoryService(new(@"https://github.com/DifolderyXXL/DiNet.RctSchedule.Widget.git")));

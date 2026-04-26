@@ -1,15 +1,10 @@
-﻿
-using DiNet.GPipe.SharedKernel;
-
-namespace DiNet.GPipe.BackgroundWorker.Branches;
+﻿namespace DiNet.GPipe.BackgroundWorker.Branches;
 
 public interface ICommitSource
 {
     public string ProjectName { get; }
-    public string BranchName { get; }
 
-    public BranchVersion TargetVersionType { get; }
-
-    public string? GetTopCommitHash();
-    public string? GetNextCommitHash(string current);
+    public CommitInfo? GetTopCommitHash(string branchName);
+    public IEnumerable<CommitInfo> GetCommitsSince(string branchName, string? commit);
 }
+public record CommitInfo(string Hash, DateTime Date);

@@ -1,13 +1,15 @@
 ﻿using DiNet.GPipe.BackgroundWorker.Branches;
+using DiNet.GPipe.Infrastructure.Project;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
 
 namespace DiNet.GPipe.Infrastructure.DataRepositories;
 
-public class FileDataRepository<T>(IOptions<StorageSettings> settings) : IDataRepository<T>
+public class ScopedFileDataRepository<T>(IProjectScopeContext context, IOptions<StorageSettings> settings) : IDataRepository<T>
 {
     private readonly string _filePath = Path.Combine(
         settings.Value.BasePath,
+        context.ProjectName,
         $"{typeof(T).Name}.json"
     );
 

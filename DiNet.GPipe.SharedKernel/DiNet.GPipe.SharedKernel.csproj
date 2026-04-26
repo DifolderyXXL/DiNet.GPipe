@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DiNet.GPipe.Domain\DiNet.GPipe.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
