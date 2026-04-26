@@ -4,6 +4,7 @@ public interface IWatcherManager
 {
     public Task<Guid> CreateWatcherAsync(WatcherRequest request, CancellationToken ct);
     public Task DeleteWatcherAsync(Guid id, CancellationToken ct);
+    public Task<Watcher?> GetWatcherAsync(Guid id, CancellationToken ct);
     public IEnumerable<Watcher> EnumerateAllWatchers();
     public Task UpdateIntervalAsync(string branchName, CancellationToken ct);
 }

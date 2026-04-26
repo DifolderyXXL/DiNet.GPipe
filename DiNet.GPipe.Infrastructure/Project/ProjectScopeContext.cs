@@ -1,6 +1,4 @@
-﻿using DiNet.GPipe.Application;
-
-namespace DiNet.GPipe.Infrastructure.Project;
+﻿namespace DiNet.GPipe.Infrastructure.Project;
 
 public class ProjectScopeContext : IProjectScopeContext
 {

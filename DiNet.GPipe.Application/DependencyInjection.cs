@@ -1,4 +1,5 @@
-﻿using DiNet.GPipe.Application.Project;
+﻿using DiNet.GPipe.Application.Handlers.Messaging;
+using DiNet.GPipe.Application.Project;
 using DiNet.GPipe.Application.Versions;
 using DiNet.GPipe.Application.Workers;
 using DiNet.GPipe.SharedKernel.Interfaces;
@@ -13,24 +14,21 @@ public static class DependencyInjection
     {
         public IServiceCollection AddApplication()
         => services
-            .AddWatcherManager()
-            .AddBuilding()
-            .AddProjectServices();
+            .AddCommandHandlers()
+            .AddWatcherManagement()
+            .AddBuilding();
 
-        IServiceCollection AddWatcherManager()
+        IServiceCollection AddWatcherManagement()
         {
             services.AddSingleton<IWatcherManager, WatcherManager>();
-            services.AddScoped<IWorkerFactory, WorkerFactory>();
+            services.AddSingleton<IWorkerFactory, WorkerFactory>();
 
-            return services;
-        }
-
-        IServiceCollection AddProjectServices()
-        {
             services.AddSingleton<IProjectService, ProjectService>();
 
+
             return services;
         }
+
 
 
         IServiceCollection AddBuilding()
@@ -38,5 +36,21 @@ public static class DependencyInjection
             services.AddScoped<IVersionService, VersionService>();
             return services;
         }
+
+        IServiceCollection AddCommandHandlers()
+        {
+            services.Scan(scan => scan.FromAssembliesOf(typeof(DependencyInjection))
+                .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>)), publicOnly: false)
+                    .AsImplementedInterfaces()
+                    .WithScopedLifetime()
+
+                .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<,>)), publicOnly: false)
+                    .AsImplementedInterfaces()
+                    .WithScopedLifetime()
+                );
+
+            return services;
+        }
+
     }
 }

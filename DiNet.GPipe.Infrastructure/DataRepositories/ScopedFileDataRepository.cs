@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace DiNet.GPipe.Infrastructure.DataRepositories;
 
-public class ScopedFileDataRepository<T>(IProjectScopeContext context, IOptions<StorageSettings> settings) : IDataRepository<T>
+public class ScopedFileDataRepository<T>(IProjectScopeContext context, IOptions<ScopedStorageOptions> settings) : IDataRepository<T>
 {
     private readonly string _filePath = Path.Combine(
         settings.Value.BasePath,
@@ -23,6 +23,8 @@ public class ScopedFileDataRepository<T>(IProjectScopeContext context, IOptions<
 
     public void Save(T value)
     {
+        Directory.CreateDirectory(Path.GetDirectoryName(_filePath)!);
+
         var json = JsonSerializer.Serialize(value);
         File.WriteAllText(_filePath, json);
     }

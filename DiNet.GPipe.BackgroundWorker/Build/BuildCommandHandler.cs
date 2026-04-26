@@ -11,7 +11,7 @@ public class BuildCommandHandler(IBuildRegistryRepository buildRepository,
                           IApkStagingStorage storage,
                           IWorkingDirectoryWorkspace workspace,
                           IEventBus eventBus,
-                          IsolatedSpaceBuilder isolatedSpaceBuilder) : IAsyncCommandHandler<CommitDetected>
+                          IsolatedSpaceBuilder isolatedSpaceBuilder) : IAsyncEventHandler<CommitDetected>
 {
     private readonly SemaphoreSlim _lock = new(1, 1);
 

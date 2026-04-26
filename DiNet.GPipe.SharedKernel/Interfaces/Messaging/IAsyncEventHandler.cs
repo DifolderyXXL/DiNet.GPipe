@@ -1,6 +1,6 @@
 ﻿namespace DiNet.GPipe.SharedKernel.Interfaces.Messaging;
 
-public interface IAsyncCommandHandler<T>
+public interface IAsyncEventHandler<T>
 {
     public Task HandleAsync(T command, CancellationToken ct);
 }

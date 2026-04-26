@@ -1,6 +1,4 @@
 ﻿using DiNet.GPipe.Application.Project;
-using DiNet.GPipe.Domain;
-using DiNet.GPipe.SharedKernel.Interfaces;
 using DiNet.GPipe.SharedKernel.Watchers;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Concurrent;
@@ -42,6 +40,14 @@ public class WatcherManager(IProjectService projectService, IWorkerFactory worke
     public IEnumerable<Watcher> EnumerateAllWatchers()
     {
         return _watchers.Values.Select(x => x.Watcher);
+    }
+
+    public async Task<Watcher?> GetWatcherAsync(Guid id, CancellationToken ct)
+    {
+        if (_watchers.TryGetValue(id, out var entry))
+            return entry.Watcher;
+
+        return null;
     }
 
     public async Task UpdateIntervalAsync(string branchName, CancellationToken ct)

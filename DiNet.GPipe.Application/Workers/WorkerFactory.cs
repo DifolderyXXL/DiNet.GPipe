@@ -16,7 +16,9 @@ public class WorkerFactory(IServiceScopeFactory scopeFactory) : IWorkerFactory
         var context = scope.ServiceProvider.GetRequiredService<IProjectScopeContext>();
         context.Initialize(project.Id, request.ProjectName, request.GitUrl);
 
-        var workerInstance = ActivatorUtilities.CreateInstance<BranchCheckWorker>(scope.ServiceProvider, request);
+
+        var parameters = new WatcherParameters(project, request.Branches, request.PollInterval);
+        var workerInstance = ActivatorUtilities.CreateInstance<BranchCheckWorker>(scope.ServiceProvider, parameters);
 
         var watcher = new Watcher(id, request.ProjectName, request.GitUrl, request.Branches, WatcherStatus.Created);
 

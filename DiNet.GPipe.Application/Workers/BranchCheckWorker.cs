@@ -10,8 +10,6 @@ namespace DiNet.GPipe.Application.Workers;
 
 public record WatcherParameters(
     ProjectModel Project,
-    string ProjectName,
-    string GitUrl,
     List<BranchConfig> Branches,
     TimeSpan Period
     );
@@ -21,7 +19,8 @@ public class BranchData
     public Dictionary<string, string> LastSeenHashes { get; set; } = new();
 }
 
-public class BranchCheckWorker(WatcherParameters parameters,
+
+public class BranchCheckWorker (WatcherParameters parameters,
                                IVersionService versionService,
                                ICommitSource commitSource,
                                IDataRepository<BranchData> branchRepository,
@@ -46,7 +45,7 @@ public class BranchCheckWorker(WatcherParameters parameters,
             }
             catch(Exception e)
             {
-                logger.LogError(e, "Error while checking commits for {Project}", parameters.ProjectName);
+                logger.LogError(e, "Error while checking commits for {Project}", parameters.Project.Name);
             }
         }
     }

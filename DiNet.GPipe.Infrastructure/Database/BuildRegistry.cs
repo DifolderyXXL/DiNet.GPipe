@@ -4,29 +4,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DiNet.GPipe.Infrastructure.Database;
 
-public class AppDbContext : DbContext
-{
-    public DbSet<BuildRegistry> BuildRegistries => Set<BuildRegistry>();
-    public DbSet<ProjectModel> Projects => Set<ProjectModel>();
-
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-    {
-    }
-
-    protected override void OnModelCreating(ModelBuilder mb)
-    {
-        mb.Entity<BuildRegistry>()
-            .HasKey(x => x.CommitHash);
-        mb.Entity<BuildRegistry>()
-            .HasOne(x=>x.Project)
-            .WithMany(x=>x.Builds);
-            
-
-        mb.Entity<ProjectModel>()
-            .HasKey(x => x.Id);
-    }
-}
-
 public class BuildRegistryRepository(AppDbContext context) : IBuildRegistryRepository
 {
     public async Task Add(BuildRegistry build)
@@ -82,6 +59,10 @@ public class ProjectsRepository(AppDbContext context) : IProjectsRepository
     {
         return await context.Projects.FindAsync(id);
     }
+
+    public async Task<ProjectModel?> GetByGitUrl(string gitUrl)
+    {
+        return await context.Projects.FirstOrDefaultAsync(x => x.GitUrl == gitUrl);    }
 
     public async Task SaveAsync()
     {

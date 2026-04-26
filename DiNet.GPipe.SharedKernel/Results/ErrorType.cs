@@ -3,5 +3,8 @@
 public enum ErrorType
 {
     Internal,
+    NotFound,
+    Conflict,
+    Problem,
     Gradlew
 }

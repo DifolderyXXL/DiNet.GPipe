@@ -4,6 +4,7 @@ using DiNet.GPipe.Infrastructure.DataRepositories;
 using DiNet.GPipe.Infrastructure.Git;
 using DiNet.GPipe.Infrastructure.Messaging;
 using DiNet.GPipe.Infrastructure.Project;
+using DiNet.GPipe.SharedKernel.Interfaces;
 using DiNet.GPipe.SharedKernel.Interfaces.Messaging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +19,7 @@ public static class DependencyInjection
         public IServiceCollection AddInfrastructure(IConfiguration configuration)
             => services
                 .UseEventBus()
-                .UseLocalDirectoryRepository()
+                .UseLocalDirectoryRepository(configuration)
                 .UseGit()
                 .UseDatabase(configuration);
 
@@ -29,9 +30,16 @@ public static class DependencyInjection
             return services;
         }
 
-        IServiceCollection UseLocalDirectoryRepository()
+        IServiceCollection UseLocalDirectoryRepository(IConfiguration configuration)
         {
             services.AddScoped(typeof(IDataRepository<>), typeof(ScopedFileDataRepository<>));
+
+
+            var section = configuration.GetSection(nameof(ScopedStorageOptions));
+            if (!section.Exists())
+                throw new Exception("ScopedStorageOptions is not configured!");
+            services.AddOptions<ScopedStorageOptions>()
+                .Bind(section);
 
             return services;
         }
@@ -56,6 +64,9 @@ public static class DependencyInjection
             {
                 options.UseSqlite(connectionString);
             });
+
+            services.AddScoped<IProjectsRepository, ProjectsRepository>();
+            services.AddScoped<IBuildRegistryRepository, BuildRegistryRepository>();
 
             return services;
         }
