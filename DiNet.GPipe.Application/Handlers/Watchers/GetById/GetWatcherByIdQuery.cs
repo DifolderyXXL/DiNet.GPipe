@@ -2,4 +2,4 @@
 
 namespace DiNet.GPipe.Application.Handlers.Watchers.GetById;
 
-public sealed record GetWatcherByIdQuery(Guid Id) : IQuery<WatcherResponse>;
+public sealed record GetWatcherByIdQuery(int ProjectId) : IQuery<WatcherResponse>;

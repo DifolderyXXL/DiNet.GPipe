@@ -2,17 +2,12 @@
 using DiNet.GPipe.Domain;
 using DiNet.GPipe.SharedKernel.Interfaces;
 using DiNet.GPipe.SharedKernel.Interfaces.Messaging;
+using DiNet.GPipe.SharedKernel.Models;
 using DiNet.GPipe.SharedKernel.Models.Commands;
 using DiNet.GPipe.SharedKernel.Watchers;
 using Microsoft.Extensions.Logging;
 
 namespace DiNet.GPipe.Application.Workers;
-
-public record WatcherParameters(
-    ProjectModel Project,
-    List<BranchConfig> Branches,
-    TimeSpan Period
-    );
 
 public class BranchData
 {

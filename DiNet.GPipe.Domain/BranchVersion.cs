@@ -1,4 +1,4 @@
-﻿namespace DiNet.GPipe.SharedKernel;
+﻿namespace DiNet.GPipe.Domain;
 
 public enum BranchVersion
 {

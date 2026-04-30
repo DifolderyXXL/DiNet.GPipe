@@ -1,3 +1,5 @@
-﻿namespace DiNet.GPipe.SharedKernel.Watchers;
+﻿using DiNet.GPipe.Domain;
+
+namespace DiNet.GPipe.SharedKernel.Watchers;
 
 public record BranchConfig(string BranchName, BranchVersion VersionType);

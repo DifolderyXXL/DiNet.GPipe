@@ -1,6 +1,5 @@
 ﻿using DiNet.GPipe.BackgroundWorker.Branches;
 using DiNet.GPipe.Domain;
-using DiNet.GPipe.SharedKernel;
 using DiNet.GPipe.SharedKernel.Interfaces;
 
 namespace DiNet.GPipe.Application.Versions;

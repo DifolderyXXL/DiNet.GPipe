@@ -15,13 +15,3 @@ public interface IBuildRegistryRepository
 
     public Task CreateFailedRecord(BuildVersion? version, string commitHash, string error);
 }
-
-public interface IProjectsRepository
-{
-    public Task<ProjectModel?> Get(int id);
-    public Task Add(ProjectModel project);
-    public Task<bool> Contains(int id);
-    public Task<ProjectModel?> GetByGitUrl(string gitUrl);
-
-    public Task SaveAsync();
-}

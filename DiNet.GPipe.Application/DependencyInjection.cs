@@ -20,7 +20,7 @@ public static class DependencyInjection
 
         IServiceCollection AddWatcherManagement()
         {
-            services.AddSingleton<IWatcherManager, WatcherManager>();
+            services.AddSingleton<IProjectWatcherManager, ProjectWatcherManager>();
             services.AddSingleton<IWorkerFactory, WorkerFactory>();
 
             services.AddSingleton<IProjectService, ProjectService>();

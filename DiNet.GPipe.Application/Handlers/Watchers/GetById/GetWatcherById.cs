@@ -4,17 +4,17 @@ using DiNet.GPipe.SharedKernel.Results;
 using DiNet.GPipe.SharedKernel.Watchers;
 
 namespace DiNet.GPipe.Application.Handlers.Watchers.GetById;
-internal class GetWatcherById(IWatcherManager manager) : IQueryHandler<GetWatcherByIdQuery, WatcherResponse>
+internal class GetWatcherById(IProjectWatcherManager manager) : IQueryHandler<GetWatcherByIdQuery, WatcherResponse>
 {
     public async Task<Result<WatcherResponse>> Handle(GetWatcherByIdQuery query, CancellationToken ct)
     {
-        var watcher = await manager.GetWatcherAsync(query.Id, ct);
+        var watcher = await manager.GetWatcherAsync(query.ProjectId, ct);
 
         return watcher switch
         {
             null => WatcherErrors.WatcherNotFounded().AsResult<WatcherResponse>(),
             _ => Result.Success(
-                new WatcherResponse(watcher.Id, watcher.ProjectName, watcher.GitUrl, watcher.Branches, watcher.Status))
+                new WatcherResponse(watcher.ProjectId, watcher.ProjectName, watcher.GitUrl, watcher.Branches, watcher.Status))
         };
     }
 }

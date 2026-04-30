@@ -1,13 +1,14 @@
 ﻿using DiNet.GPipe.Application.Handlers.Messaging;
+using DiNet.GPipe.Application.Workers;
 using DiNet.GPipe.SharedKernel.Results;
 using DiNet.GPipe.SharedKernel.Watchers;
 
 namespace DiNet.GPipe.Application.Handlers.Watchers.Create;
-internal class CreateWatcher(IWatcherManager manager) : ICommandHandler<CreateWatcherCommand, CreatedWatcherResponse>
+internal class CreateWatcher(IWatcherOrchestrator watcherOrchestrator) : ICommandHandler<CreateWatcherCommand, CreatedWatcherResponse>
 {
     public async Task<Result<CreatedWatcherResponse>> Handle(CreateWatcherCommand command, CancellationToken ct)
     {
-        var watcherId = await manager.CreateWatcherAsync(
+        var watcherId = await watcherOrchestrator.CreateAndStartWatcher(
             new WatcherRequest(
                 command.ProjectName,
                 command.GitUrl,
@@ -17,6 +18,8 @@ internal class CreateWatcher(IWatcherManager manager) : ICommandHandler<CreateWa
             ct
             );
 
-        return Result.Success(new CreatedWatcherResponse(watcherId));
+
+
+        return watcherId.MatchG(x => new CreatedWatcherResponse(watcherId.Value), e => default);
     }
 }

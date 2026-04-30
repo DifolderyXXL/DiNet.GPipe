@@ -1,13 +1,16 @@
-﻿namespace DiNet.GPipe.SharedKernel.Watchers;
+﻿using DiNet.GPipe.SharedKernel.Models;
 
-public interface IWatcherManager
+namespace DiNet.GPipe.SharedKernel.Watchers;
+
+public interface IProjectWatcherManager
 {
-    public Task<Guid> CreateWatcherAsync(WatcherRequest request, CancellationToken ct);
-    public Task DeleteWatcherAsync(Guid id, CancellationToken ct);
-    public Task<Watcher?> GetWatcherAsync(Guid id, CancellationToken ct);
+    public Task<int> CreateWatcherAsync(WatcherParameters request, CancellationToken ct);
+    public Task DeleteWatcherAsync(int id, CancellationToken ct);
+    public Task<Watcher?> GetWatcherAsync(int id, CancellationToken ct);
     public IEnumerable<Watcher> EnumerateAllWatchers();
     public Task UpdateIntervalAsync(string branchName, CancellationToken ct);
 }
+
 
 public interface IWatcherWorker
 {
@@ -23,7 +26,7 @@ public enum WatcherStatus
 }
 
 public record Watcher(
-    Guid Id, 
+    int ProjectId, 
     string ProjectName,
     string GitUrl,
     List<BranchConfig> Branches,

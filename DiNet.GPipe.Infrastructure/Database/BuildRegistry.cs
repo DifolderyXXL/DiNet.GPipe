@@ -55,6 +55,23 @@ public class ProjectsRepository(AppDbContext context) : IProjectsRepository
         return await context.Projects.FindAsync(id) != null;
     }
 
+    public async Task<bool> Delete(int id)
+    {
+        var entity = await context.Projects.FindAsync(id);
+
+        if(entity == null) return false;
+
+        context.Projects.Remove(entity);
+        await context.SaveChangesAsync();
+
+        return true;
+    }
+
+    public IEnumerable<ProjectModel> EnumerateAllReadonly()
+    {
+        return context.Projects.AsTracking().AsEnumerable();
+    }
+
     public async Task<ProjectModel?> Get(int id)
     {
         return await context.Projects.FindAsync(id);

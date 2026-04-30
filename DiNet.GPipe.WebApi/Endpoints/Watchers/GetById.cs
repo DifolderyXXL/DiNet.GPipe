@@ -11,7 +11,7 @@ public class GetById : IEndpoint
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
         app.MapGet("/watchers/{id}", async (
-            Guid id,
+            int id,
             IQueryHandler<GetWatcherByIdQuery, WatcherResponse> handler,
             CancellationToken ct) =>
         {
