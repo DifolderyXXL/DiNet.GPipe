@@ -2,6 +2,7 @@
 using DiNet.GPipe.Application.Workers;
 using DiNet.GPipe.SharedKernel.Results;
 using DiNet.GPipe.SharedKernel.Watchers;
+using System.ComponentModel;
 
 namespace DiNet.GPipe.Application.Handlers.Watchers.Create;
 internal class CreateWatcher(IWatcherOrchestrator watcherOrchestrator) : ICommandHandler<CreateWatcherCommand, CreatedWatcherResponse>
@@ -12,14 +13,13 @@ internal class CreateWatcher(IWatcherOrchestrator watcherOrchestrator) : IComman
             new WatcherRequest(
                 command.ProjectName,
                 command.GitUrl,
+                command.FastStart,
                 command.Branches,
                 command.PollInterval
                 ),
             ct
             );
 
-
-
-        return watcherId.MatchG(x => new CreatedWatcherResponse(watcherId.Value), e => default);
+        return watcherId.MapOnSuccess(x => new CreatedWatcherResponse(watcherId.Value));
     }
 }

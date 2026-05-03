@@ -20,7 +20,6 @@ public class GetById : IEndpoint
             var result = await handler.Handle(query, ct);
 
             return result.Match(Results.Ok, CustomResults.Problem);
-
         });
     }
 }

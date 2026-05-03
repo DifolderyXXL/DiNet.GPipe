@@ -35,6 +35,7 @@ public record Watcher(
 public record WatcherRequest(
     string ProjectName,
     string GitUrl,
+    bool FastStart,
     List<BranchConfig> Branches, 
     TimeSpan PollInterval
     );

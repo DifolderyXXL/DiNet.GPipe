@@ -25,7 +25,8 @@ public static class DependencyInjection
 
             services.AddSingleton<IProjectService, ProjectService>();
 
-
+            services.AddScoped<IWatcherOrchestrator, WatcherOrchestrator>();
+           
             return services;
         }
 
@@ -45,6 +46,10 @@ public static class DependencyInjection
                     .WithScopedLifetime()
 
                 .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<,>)), publicOnly: false)
+                    .AsImplementedInterfaces()
+                    .WithScopedLifetime()
+
+                .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<>)), publicOnly: false)
                     .AsImplementedInterfaces()
                     .WithScopedLifetime()
                 );

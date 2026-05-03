@@ -18,7 +18,18 @@ public class ProjectService(IServiceScopeFactory scopeFactory) : IProjectService
 
         if(project == null)
         {
-            project = new() { Name = request.ProjectName, GitUrl = request.GitUrl };
+            project = new() 
+            { 
+                Name = request.ProjectName, 
+                GitUrl = request.GitUrl,
+                WatcherSettings = new()
+                {
+                    PollInterval = request.PollInterval,
+                    IsActive = request.FastStart
+                },
+                BranchConfigs = request.Branches.Select(
+                    x=>new BranchWatcherConfig() { BranchName = x.BranchName, VersionType = x.VersionType }).ToList()
+            };
             await projectsRepository.Add(project);
             await projectsRepository.SaveAsync();
 
@@ -27,6 +38,7 @@ public class ProjectService(IServiceScopeFactory scopeFactory) : IProjectService
 
         return ProjectErrors.ProjectAlreadyExists(request.GitUrl);
     }
+
 
     public async Task<Result> DeleteProject(int id, CancellationToken ct)
     {
@@ -37,5 +49,23 @@ public class ProjectService(IServiceScopeFactory scopeFactory) : IProjectService
             return Result.Success();
 
         return ProjectErrors.ProjectConflict().AsResult();
+    }
+
+    public async Task<Result<ProjectModel>> GetProjectById(int id, CancellationToken ct)
+    {
+        using var initScope = scopeFactory.CreateScope();
+        var projectsRepository = initScope.ServiceProvider.GetRequiredService<IProjectsRepository>();
+
+        var project = await projectsRepository.Get(id);
+        return project;
+    }
+
+    public async Task<Result<ProjectModel>> GetProjectByUrl(string gitUrl, CancellationToken ct)
+    {
+        using var initScope = scopeFactory.CreateScope();
+        var projectsRepository = initScope.ServiceProvider.GetRequiredService<IProjectsRepository>();
+
+        var project = await projectsRepository.GetByGitUrl(gitUrl);
+        return project;
     }
 }

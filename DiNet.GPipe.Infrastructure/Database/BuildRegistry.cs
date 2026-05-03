@@ -69,12 +69,17 @@ public class ProjectsRepository(AppDbContext context) : IProjectsRepository
 
     public IEnumerable<ProjectModel> EnumerateAllReadonly()
     {
-        return context.Projects.AsTracking().AsEnumerable();
+        return context.Projects
+            .Include(x=>x.WatcherSettings)
+            .AsTracking()
+            .AsEnumerable();
     }
 
     public async Task<ProjectModel?> Get(int id)
     {
-        return await context.Projects.FindAsync(id);
+        return await context.Projects.Include(x=>x.WatcherSettings)
+            .Where(x=>x.Id==id)
+            .FirstOrDefaultAsync();
     }
 
     public async Task<ProjectModel?> GetByGitUrl(string gitUrl)

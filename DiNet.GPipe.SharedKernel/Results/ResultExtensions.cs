@@ -4,15 +4,6 @@ public static class ResultExtensions
 {
     extension<TIn>(Result<TIn> result)
     {
-        public TOut MatchG<TOut>(
-            Func<TIn, TOut> onSuccess,
-            Func<Result<TIn>, TOut> onFailure)
-        {
-            return result.IsSuccess ? onSuccess(result.Value!) : onFailure(result);
-        }
-    }
-    extension<TIn>(Result<TIn> result)
-    {
         public TOut Match<TOut>(
             Func<TIn, TOut> onSuccess,
             Func<Result<TIn>, TOut> onFailure)
@@ -28,6 +19,15 @@ public static class ResultExtensions
             Func<Result, TOut> onFailure)
         {
             return result.IsSuccess ? onSuccess() : onFailure(result);
+        }
+    }
+
+    extension<TIn>(Result<TIn> result)
+    {
+        public Result<TOut> MapOnSuccess<TOut>(
+            Func<TIn, TOut> onSuccess)
+        {
+            return result.IsSuccess ? onSuccess(result.Value!) : Result.Failure<TOut>(result.Error);
         }
     }
 }

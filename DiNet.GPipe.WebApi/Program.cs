@@ -1,9 +1,10 @@
 using DiNet.GPipe.Application;
+using DiNet.GPipe.Application.Workers;
 using DiNet.GPipe.Infrastructure;
 using DiNet.GPipe.Infrastructure.Database;
 using DiNet.GPipe.WebApi.Extensions;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
+using System.Runtime.CompilerServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +33,14 @@ using (var scope = app.Services.CreateScope())
         await db.Database.MigrateAsync();
     });
 }
+
+using (var scope = app.Services.CreateScope())
+{
+    var orchestration = scope.ServiceProvider.GetRequiredService<IWatcherOrchestrator>();
+
+    await orchestration.InitializeAsync(default);
+}
+
 
 
 app.MapEndpoints();
