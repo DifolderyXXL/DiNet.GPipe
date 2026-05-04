@@ -1,4 +1,4 @@
-﻿namespace DiNet.GPipe.BackgroundWorker.Branches;
+﻿namespace DiNet.GPipe.SharedKernel.Interfaces;
 
 public interface IDataRepository<T>
 {

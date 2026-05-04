@@ -1,11 +1,12 @@
-﻿using DiNet.GPipe.Domain;
+﻿using DiNet.GPipe.Application.Project;
+using DiNet.GPipe.Domain;
 using DiNet.GPipe.SharedKernel.Extensions;
 using DiNet.GPipe.SharedKernel.Interfaces;
 using DiNet.GPipe.SharedKernel.Results;
 using DiNet.GPipe.SharedKernel.Watchers;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DiNet.GPipe.Application.Project;
+namespace DiNet.GPipe.Infrastructure.Project;
 
 public class ProjectService(IServiceScopeFactory scopeFactory) : IProjectService
 {

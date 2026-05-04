@@ -1,7 +1,7 @@
-﻿using DiNet.GPipe.BackgroundWorker.Branches;
-using DiNet.GPipe.Infrastructure.Project;
+﻿using DiNet.GPipe.Infrastructure.Project;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
+using DiNet.GPipe.SharedKernel.Interfaces;
 
 namespace DiNet.GPipe.Infrastructure.DataRepositories;
 

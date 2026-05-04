@@ -1,4 +1,4 @@
-﻿namespace DiNet.GPipe.BackgroundWorker.Apk.Consuming;
+﻿namespace DiNet.GPipe.BuildingApplication.Apk.Consuming;
 
 public interface IPublication
 {

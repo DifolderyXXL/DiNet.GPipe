@@ -1,18 +1,17 @@
-﻿using DiNet.GPipe.Application.Handlers.Messaging;
-using DiNet.GPipe.Application.Workers;
+﻿using DiNet.GPipe.Application.Workers;
 using DiNet.GPipe.SharedKernel.Results;
-using static DiNet.GPipe.Application.Handlers.Watchers.Deactivate.ChangeActiveWatcherCommand;
+using DiNet.GPipe.Application.Handlers.Abstraction;
 
-namespace DiNet.GPipe.Application.Handlers.Watchers.Deactivate;
+namespace DiNet.GPipe.Application.Handlers.Watchers.ChangeActive;
 
-public record ChangeActiveWatcherCommand(int ProjectId, ActiveStateCommand ActiveState) : ICommand
+
+public enum ActiveStateCommand
 {
-    public enum ActiveStateCommand
-    {
-        Activate,
-        Diactivate
-    }
+    Activate,
+    Diactivate
 }
+
+public record ChangeActiveWatcherCommand(int ProjectId, ActiveStateCommand ActiveState) : ICommand;
 public class ChangeActiveWatcher(IWatcherOrchestrator watcherOrchestrator) : ICommandHandler<ChangeActiveWatcherCommand>
 {
     public async Task<Result> Handle(ChangeActiveWatcherCommand command, CancellationToken ct)

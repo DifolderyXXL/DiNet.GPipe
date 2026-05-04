@@ -1,6 +1,6 @@
 ﻿using DiNet.GPipe.Domain;
 
-namespace DiNet.GPipe.SharedKernel.Interfaces;
+namespace DiNet.GPipe.Application.Versions;
 
 public interface IVersionService
 {

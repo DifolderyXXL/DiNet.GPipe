@@ -1,17 +1,9 @@
-﻿using DiNet.GPipe.BackgroundWorker.Branches;
-using DiNet.GPipe.SharedKernel.Models;
-using DiNet.GPipe.SharedKernel.Results;
+﻿using DiNet.GPipe.SharedKernel.Models;
 using DiNet.GPipe.SharedKernel.Watchers;
-using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Concurrent;
+using DiNet.GPipe.Application.Workers;
 
-namespace DiNet.GPipe.Application.Workers;
-
-public record WatcherEntry(
-    CancellationTokenSource CancellationTokenSource,
-    Watcher Watcher,
-    IServiceScope Scope,
-    BranchCheckWorker Instance);
+namespace DiNet.GPipe.Infrastructure.Workers;
 public class ProjectWatcherManager(IWorkerFactory workerFactory) : IProjectWatcherManager
 {
     private readonly ConcurrentDictionary<int, WatcherEntry> _watchers = [];
@@ -54,12 +46,4 @@ public class ProjectWatcherManager(IWorkerFactory workerFactory) : IProjectWatch
     {
 
     }
-}
-
-
-public interface IWatcherOrchestrator
-{
-    public Task InitializeAsync(CancellationToken ct);
-    public Task<Result> ChangeActiveAsync(int projectId, bool active, CancellationToken ct);
-    public Task<Result<int>> CreateAndStartWatcher(WatcherRequest request, CancellationToken ct);
 }

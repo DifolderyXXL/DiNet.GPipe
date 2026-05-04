@@ -1,6 +1,6 @@
-﻿using DiNet.GPipe.Application.Handlers.Messaging;
-using DiNet.GPipe.SharedKernel.Interfaces;
+﻿using DiNet.GPipe.SharedKernel.Interfaces;
 using DiNet.GPipe.SharedKernel.Results;
+using DiNet.GPipe.Application.Handlers.Abstraction;
 
 namespace DiNet.GPipe.Application.Handlers.Projects.Get;
 

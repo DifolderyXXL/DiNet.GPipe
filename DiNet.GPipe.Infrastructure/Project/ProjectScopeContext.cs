@@ -1,4 +1,6 @@
-﻿namespace DiNet.GPipe.Infrastructure.Project;
+﻿using DiNet.GPipe.SharedKernel.Interfaces;
+
+namespace DiNet.GPipe.Infrastructure.Project;
 
 public class ProjectScopeContext : IProjectScopeContext
 {

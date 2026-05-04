@@ -1,4 +1,6 @@
-﻿namespace DiNet.GPipe.BackgroundWorker.Apk;
+﻿using DiNet.GPipe.BuildingApplication.Apk;
+
+namespace DiNet.GPipe.BuildingApplication.Apk;
 
 public interface IApkFile 
 {

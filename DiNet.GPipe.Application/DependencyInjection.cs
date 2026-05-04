@@ -1,10 +1,9 @@
-﻿using DiNet.GPipe.Application.Handlers.Messaging;
-using DiNet.GPipe.Application.Project;
+﻿using DiNet.GPipe.Application.Project;
 using DiNet.GPipe.Application.Versions;
 using DiNet.GPipe.Application.Workers;
-using DiNet.GPipe.SharedKernel.Interfaces;
 using DiNet.GPipe.SharedKernel.Watchers;
 using Microsoft.Extensions.DependencyInjection;
+using DiNet.GPipe.Application.Handlers.Abstraction;
 
 namespace DiNet.GPipe.Application;
 
@@ -15,24 +14,9 @@ public static class DependencyInjection
         public IServiceCollection AddApplication()
         => services
             .AddCommandHandlers()
-            .AddWatcherManagement()
-            .AddBuilding();
+            .AddVersions();
 
-        IServiceCollection AddWatcherManagement()
-        {
-            services.AddSingleton<IProjectWatcherManager, ProjectWatcherManager>();
-            services.AddSingleton<IWorkerFactory, WorkerFactory>();
-
-            services.AddSingleton<IProjectService, ProjectService>();
-
-            services.AddScoped<IWatcherOrchestrator, WatcherOrchestrator>();
-           
-            return services;
-        }
-
-
-
-        IServiceCollection AddBuilding()
+        IServiceCollection AddVersions()
         {
             services.AddScoped<IVersionService, VersionService>();
             return services;

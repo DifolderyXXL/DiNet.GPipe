@@ -1,10 +1,12 @@
-﻿using DiNet.GPipe.Domain;
+﻿using DiNet.GPipe.Application.Workers;
+using DiNet.GPipe.Domain;
 using DiNet.GPipe.Infrastructure.Project;
 using DiNet.GPipe.SharedKernel.Models;
 using DiNet.GPipe.SharedKernel.Watchers;
 using Microsoft.Extensions.DependencyInjection;
+using DiNet.GPipe.SharedKernel.Interfaces;
 
-namespace DiNet.GPipe.Application.Workers;
+namespace DiNet.GPipe.Infrastructure.Workers;
 
 public class WorkerFactory(IServiceScopeFactory scopeFactory) : IWorkerFactory
 {

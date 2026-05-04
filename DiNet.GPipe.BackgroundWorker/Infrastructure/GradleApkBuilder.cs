@@ -1,9 +1,9 @@
-﻿using DiNet.GPipe.BackgroundWorker.Apk;
-using DiNet.GPipe.JavaBuilder;
+﻿using DiNet.GPipe.JavaBuilder;
 using DiNet.GPipe.JavaBuilder.Domain;
 using DiNet.GPipe.JavaBuilder.Settings;
 using DiNet.GPipe.SharedKernel.Results;
 using Microsoft.Extensions.Options;
+using DiNet.GPipe.BuildingApplication.Apk;
 
 namespace DiNet.GPipe.BuildingApplication.Infrastructure;
 
