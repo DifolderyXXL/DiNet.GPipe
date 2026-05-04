@@ -4,19 +4,17 @@ using DiNet.GPipe.JavaBuilder.Settings;
 namespace DiNet.GPipe.JavaBuilder.Domain;
 
 public class AndroidStudioApkBuilder(
-    AndroidStudioProjectSettings settings, 
-    JdkSettings jdkSettings) : IApkBuilder
+    JdkSettings jdkSettings)
 {
-    private readonly AndroidStudioProjectSettings _settings = settings;
     private readonly JdkSettings _jdkSettings = jdkSettings;
 
-    public async Task<string?> BuildAsync(CancellationToken token)
+    public async Task<string?> BuildAsync(string projectPath, ApkBuildType buildType, CancellationToken token)
     {
         EnvironmentHelper.SetUpJdkEnvironment(_jdkSettings);
 
-        await GradlewHelper.RunCleanDebugBuild(_settings, token);
+        await GradlewHelper.RunCleanDebugBuild(projectPath, buildType, token);
 
-        var path = _settings.GetBuildApkPath();
+        var path = AndroidStudioProjectExtensions.GetBuildApkPath(projectPath, buildType);
 
         return File.Exists(path) ? path : null;
     }

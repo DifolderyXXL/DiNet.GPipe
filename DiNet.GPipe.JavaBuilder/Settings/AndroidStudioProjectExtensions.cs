@@ -1,10 +1,8 @@
 ﻿namespace DiNet.GPipe.JavaBuilder.Settings;
 
-public record AndroidStudioProjectSettings(
-    string path,
-    ApkBuildType buildType)
+public static class AndroidStudioProjectExtensions
 {
-    public string GetBuildApkPath()
+    public static string GetBuildApkPath(string projectDirectory, ApkBuildType buildType)
     {
         var stringBuildType = buildType switch
         {
@@ -13,7 +11,7 @@ public record AndroidStudioProjectSettings(
             _ => throw new NotImplementedException()
         };
 
-        return Path.Combine(path, "app", "build",
+        return Path.Combine(projectDirectory, "app", "build",
                                 "outputs", "apk",
                                 stringBuildType, 
                                 $"app-{stringBuildType}.apk");

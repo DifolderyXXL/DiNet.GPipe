@@ -1,6 +1,12 @@
-﻿namespace DiNet.GPipe.SharedKernel.Models.Commands;
+﻿using DiNet.GPipe.Domain;
+
+namespace DiNet.GPipe.SharedKernel.Models.Commands;
 
 public record ApkBuildSuccessful(
     string apkPath,
-    CommitDetected commit
+    string ProjectName,
+    string BranchName,
+    string CommitHash,
+    BuildVersion Version,
+    Guid CorrelationId
     );

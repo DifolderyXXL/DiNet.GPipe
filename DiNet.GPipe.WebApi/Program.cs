@@ -4,7 +4,7 @@ using DiNet.GPipe.Infrastructure;
 using DiNet.GPipe.Infrastructure.Database;
 using DiNet.GPipe.WebApi.Extensions;
 using Microsoft.EntityFrameworkCore;
-using System.Runtime.CompilerServices;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +20,7 @@ builder.Services.AddEndpoints(typeof(Program).Assembly);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
 
 var app = builder.Build();
 

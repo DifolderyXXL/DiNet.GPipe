@@ -1,6 +1,5 @@
 ﻿using DiNet.GPipe.BackgroundWorker.Apk;
 using DiNet.GPipe.BackgroundWorker.Apk.Consuming;
-using DiNet.GPipe.BackgroundWorker.Common;
 using DiNet.GPipe.BackgroundWorker.Storage;
 using DiNet.GPipe.BackgroundWorker.Storage.Storing;
 using DiNet.GPipe.BackgroundWorker.Versioning;
@@ -16,7 +15,7 @@ public class ConsumerTests
 
     public ConsumerTests()
     {
-        if(Directory.Exists(TestingDirectory))
+        if (Directory.Exists(TestingDirectory))
             Directory.Delete(TestingDirectory, true);
 
         Directory.CreateDirectory(TestingDirectory);
@@ -78,5 +77,3 @@ public class ConsumerTests
         */
     }
 }
-
-

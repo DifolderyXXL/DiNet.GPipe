@@ -67,12 +67,12 @@ public class ProjectsRepository(AppDbContext context) : IProjectsRepository
         return true;
     }
 
-    public IEnumerable<ProjectModel> EnumerateAllReadonly()
+    public async Task<List<ProjectModel>> QueryAll()
     {
-        return context.Projects
+        return await context.Projects
             .Include(x=>x.WatcherSettings)
             .AsTracking()
-            .AsEnumerable();
+            .ToListAsync();
     }
 
     public async Task<ProjectModel?> Get(int id)

@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DiNet.GPipe.BackgroundWorker\DiNet.GPipe.BackgroundWorker.csproj" />
+    <ProjectReference Include="..\DiNet.GPipe.BackgroundWorker\DiNet.GPipe.BuildingApplication.csproj" />
   </ItemGroup>
 
   <ItemGroup>

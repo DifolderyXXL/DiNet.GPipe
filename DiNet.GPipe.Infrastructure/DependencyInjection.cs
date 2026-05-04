@@ -4,6 +4,7 @@ using DiNet.GPipe.Infrastructure.DataRepositories;
 using DiNet.GPipe.Infrastructure.Git;
 using DiNet.GPipe.Infrastructure.Messaging;
 using DiNet.GPipe.Infrastructure.Project;
+using DiNet.GPipe.JavaBuilder.Settings;
 using DiNet.GPipe.SharedKernel.Interfaces;
 using DiNet.GPipe.SharedKernel.Interfaces.Messaging;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +41,14 @@ public static class DependencyInjection
                 throw new Exception("ScopedStorageOptions is not configured!");
             services.AddOptions<ScopedStorageOptions>()
                 .Bind(section);
+
+
+            var sectionJdk = configuration.GetSection(nameof(JdkSettings));
+            if (!section.Exists())
+                throw new Exception("JdkSettings is not configured!");
+            services.AddOptions<JdkSettings>()
+                .Bind(section);
+
 
             return services;
         }

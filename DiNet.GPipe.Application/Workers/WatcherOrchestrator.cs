@@ -16,7 +16,7 @@ public class WatcherOrchestrator(
 {
     public async Task InitializeAsync(CancellationToken ct)
     {
-        var projects = projectsRepository.EnumerateAllReadonly();
+        var projects = await projectsRepository.QueryAll();
         foreach (var project in projects)
         {
             if(project.WatcherSettings.IsActive)

@@ -4,16 +4,16 @@ namespace DiNet.GPipe.JavaBuilder.Helpers;
 
 public static class GradlewHelper
 {
-    public static async Task RunCleanDebugBuild(AndroidStudioProjectSettings settings, CancellationToken token = default)
+    public static async Task RunCleanDebugBuild(string path, ApkBuildType buildType, CancellationToken token = default)
     {
-        await RunGradlewCommand(settings, "clean");
-        await RunGradlewCommand(settings, "assembleDebug --stacktrace");
+        await RunGradlewCommand(path, "clean");
+        await RunGradlewCommand(path, $"assemble{buildType.ToString()} --stacktrace");
     }
 
 
-    public static async Task RunGradlewCommand(AndroidStudioProjectSettings settings, string command, CancellationToken token = default)
+    public static async Task RunGradlewCommand(string path, string command, CancellationToken token = default)
     {
-        await ProcessHelper.RunProcess(Path.Combine(settings.path, "gradlew.bat"), command, settings.path);
+        await ProcessHelper.RunProcess(Path.Combine(path, "gradlew.bat"), command, path);
     }
 }
 

@@ -11,7 +11,7 @@ public interface IProjectsRepository
 
     public Task<bool> Delete(int id);
 
-    public IEnumerable<ProjectModel> EnumerateAllReadonly();
+    public Task<List<ProjectModel>> QueryAll();
 
     public Task SaveAsync();
 }

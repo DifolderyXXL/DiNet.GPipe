@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DiNet.GPipe.Application\DiNet.GPipe.Application.csproj" />
+    <ProjectReference Include="..\DiNet.GPipe.JavaBuilder\DiNet.GPipe.JavaBuilder.csproj" />
     <ProjectReference Include="..\DiNet.GPipe.SharedKernel\DiNet.GPipe.SharedKernel.csproj" />
   </ItemGroup>
 

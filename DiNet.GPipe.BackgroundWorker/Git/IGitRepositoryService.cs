@@ -4,13 +4,12 @@ namespace DiNet.GPipe.BackgroundWorker.Git;
 
 public interface IGitRepositoryService
 {
-    public Task EnsureWorktreeCommit(string directory, string commitHash, CancellationToken cancellation);
+    public Task EnsureWorktreeCommit(string repositoryUrl, string directory, string commitHash, CancellationToken cancellation);
 }
 
-public record GitRepositorySettings(string repositoryUrl);
-public class GitRepositoryService(GitRepositorySettings settings) : IGitRepositoryService
+public class GitRepositoryService: IGitRepositoryService
 {
-    public async Task EnsureWorktreeCommit(string directory, string commitHash, CancellationToken cancellation)
+    public async Task EnsureWorktreeCommit(string repositoryUrl, string directory, string commitHash, CancellationToken cancellation)
     {
         await Task.Run(() =>
         {
@@ -23,7 +22,7 @@ public class GitRepositoryService(GitRepositorySettings settings) : IGitReposito
 
             Directory.CreateDirectory(dir);
             
-            Repository.Clone(settings.repositoryUrl, dir);
+            Repository.Clone(repositoryUrl, dir);
 
             CheckoutCommit(dir, commitHash);
         });

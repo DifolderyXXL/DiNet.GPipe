@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk.Worker">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>dotnet-DiNet.GPipe.BackgroundWorker-50a4a196-4485-4405-ac85-3786dd1e25d4</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DiNet.GPipe.Domain\DiNet.GPipe.Domain.csproj" />
     <ProjectReference Include="..\DiNet.GPipe.Infrastructure\DiNet.GPipe.Infrastructure.csproj" />
+    <ProjectReference Include="..\DiNet.GPipe.JavaBuilder\DiNet.GPipe.JavaBuilder.csproj" />
     <ProjectReference Include="..\DiNet.GPipe.SharedKernel\DiNet.GPipe.SharedKernel.csproj" />
   </ItemGroup>
 </Project>
