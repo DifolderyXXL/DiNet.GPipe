@@ -13,18 +13,17 @@ public class GitRepositoryService: IGitRepositoryService
     {
         await Task.Run(() =>
         {
-            var dir = Path.Combine(directory, "Target");
-            if (Repository.IsValid(dir))
+            if (Repository.IsValid(directory))
             {
-                CheckoutCommit(dir, commitHash);
+                CheckoutCommit(directory, commitHash);
                 return;
             }
 
-            Directory.CreateDirectory(dir);
+            Directory.CreateDirectory(directory);
             
-            Repository.Clone(repositoryUrl, dir);
+            Repository.Clone(repositoryUrl, directory);
 
-            CheckoutCommit(dir, commitHash);
+            CheckoutCommit(directory, commitHash);
         });
     }
 

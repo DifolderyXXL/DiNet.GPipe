@@ -6,6 +6,7 @@ using DiNet.GPipe.SharedKernel.Interfaces;
 using DiNet.GPipe.SharedKernel.Interfaces.Messaging;
 using DiNet.GPipe.SharedKernel.Models;
 using DiNet.GPipe.SharedKernel.Models.Commands;
+using Microsoft.Extensions.Options;
 
 namespace DiNet.GPipe.BuildingApplication.Handlers;
 
@@ -15,11 +16,11 @@ public interface IApkProjectStorage
     public Task<IApkFile> Store(IApkFile file, string projectName, string commitHash, CancellationToken ct);
 }
 
-public class ApkProjectStorage(IDirectoryWorkspaceOptions workspace) : IApkProjectStorage
+public class ApkProjectStorage(IOptions<DirectoryWorkspaceOptions> workspace) : IApkProjectStorage
 {
     public async Task<IApkFile> Store(IApkFile file, string projectName, string commitHash, CancellationToken ct)
     {
-        var directory = Path.Join(workspace.ProjectsApkDirectory, projectName);
+        var directory = Path.Join(workspace.Value.ProjectsApkDirectory, projectName);
 
         Directory.CreateDirectory(directory);
 
@@ -41,7 +42,7 @@ public record BuildCommand(
     Guid CorrelationId);
 public class BuildCommandHandler(IBuildRegistryRepository buildRepository,
                           IApkProjectStorage storage,
-                          IDirectoryWorkspaceOptions workspace,
+                          IOptions<DirectoryWorkspaceOptions> workspace,
                           IEventBus eventBus,
                           IsolatedSpaceBuilder isolatedSpaceBuilder) : IAsyncEventHandler<BuildCommand>
 {
@@ -57,7 +58,7 @@ public class BuildCommandHandler(IBuildRegistryRepository buildRepository,
 
             var result = await isolatedSpaceBuilder.BuildIsolated(
                 command.RepositoryUrl,
-                workspace.WorkingDirectory,
+                workspace.Value.WorkingDirectory,
                 command.CommitHash,
                 ct
                 );

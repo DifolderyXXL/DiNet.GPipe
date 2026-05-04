@@ -1,5 +1,6 @@
 using DiNet.GPipe.Application;
 using DiNet.GPipe.Application.Workers;
+using DiNet.GPipe.BuildingApplication;
 using DiNet.GPipe.Infrastructure;
 using DiNet.GPipe.Infrastructure.Database;
 using DiNet.GPipe.WebApi.Extensions;
@@ -13,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
+builder.Services.AddBuildingApplication(builder.Configuration);
 
 builder.Services.AddEndpoints(typeof(Program).Assembly);
 

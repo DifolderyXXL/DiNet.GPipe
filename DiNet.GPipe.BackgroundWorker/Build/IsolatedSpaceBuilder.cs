@@ -10,9 +10,11 @@ public class IsolatedSpaceBuilder(IApkBuilder api, IGitRepositoryService gitRepo
 {
     public async Task<Result<IApkFile>> BuildIsolated(string repositoryUrl, string workingDirectory, string commitHash, CancellationToken cancellation)
     {
-        await gitRepository.EnsureWorktreeCommit(repositoryUrl, workingDirectory, commitHash, cancellation);
+        var dir = Path.Combine(workingDirectory, "Isolated");
 
-        var result = await api.Build(new ApkBuildCommand(workingDirectory, BuildType.Release));
+        await gitRepository.EnsureWorktreeCommit(repositoryUrl, dir, commitHash, cancellation);
+
+        var result = await api.Build(new ApkBuildCommand(dir, BuildType.Release));
 
         return result;
     }

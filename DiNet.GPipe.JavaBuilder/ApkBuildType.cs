@@ -3,6 +3,6 @@
 public enum ApkBuildType
 {
     Debug,
-    Release
+    ReleaseSigned
 }
 

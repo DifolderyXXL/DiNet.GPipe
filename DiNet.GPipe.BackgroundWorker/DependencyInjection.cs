@@ -1,7 +1,9 @@
 ﻿using DiNet.GPipe.BackgroundWorker.Apk;
 using DiNet.GPipe.BackgroundWorker.Build;
 using DiNet.GPipe.BackgroundWorker.Git;
+using DiNet.GPipe.BuildingApplication.Handlers;
 using DiNet.GPipe.BuildingApplication.Infrastructure;
+using DiNet.GPipe.JavaBuilder;
 using DiNet.GPipe.SharedKernel.Interfaces.Messaging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,16 +23,24 @@ public static class DependencyInjection
             );
 
 
-            var section = configuration.GetSection(nameof(LocalDirectoryWorkspaceOptions));
+            var section = configuration.GetSection(nameof(DirectoryWorkspaceOptions));
             if (!section.Exists())
-                throw new Exception("LocalBuildingDirectoryWorkspaceOptions is not configured!");
-            services.AddOptions<LocalDirectoryWorkspaceOptions>()
+                throw new Exception("DirectoryWorkspaceOptions is not configured!");
+            services.AddOptions<DirectoryWorkspaceOptions>()
                 .Bind(section);
 
 
-            services.AddSingleton<IsolatedSpaceBuilder>();
-            services.AddSingleton<IApkBuilder, GradleApkBuilder>();
-            services.AddSingleton<IGitRepositoryService, GitRepositoryService>();
+            var releaseSection = configuration.GetSection(nameof(SignedReleaseBuildOptions));
+            if (!section.Exists())
+                throw new Exception("SignedReleaseBuildOptions is not configured!");
+            services.AddOptions<SignedReleaseBuildOptions>()
+                .Bind(releaseSection);
+
+
+            services.AddScoped<IsolatedSpaceBuilder>();
+            services.AddScoped<IApkBuilder, GradleApkBuilder>();
+            services.AddScoped<IGitRepositoryService, GitRepositoryService>();
+            services.AddScoped<IApkProjectStorage, ApkProjectStorage>();
 
             return services;
         }

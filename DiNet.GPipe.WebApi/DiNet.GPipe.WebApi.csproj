@@ -4,6 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>e4a4d00e-a2c5-4469-950e-de4cd009879d</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DiNet.GPipe.Application\DiNet.GPipe.Application.csproj" />
+    <ProjectReference Include="..\DiNet.GPipe.BackgroundWorker\DiNet.GPipe.BuildingApplication.csproj" />
     <ProjectReference Include="..\DiNet.GPipe.Infrastructure\DiNet.GPipe.Infrastructure.csproj" />
     <ProjectReference Include="..\DiNet.GPipe.SharedKernel\DiNet.GPipe.SharedKernel.csproj" />
   </ItemGroup>

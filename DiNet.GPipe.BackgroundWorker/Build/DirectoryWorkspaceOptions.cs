@@ -1,11 +1,6 @@
 ﻿namespace DiNet.GPipe.BackgroundWorker.Build;
 
-public interface IDirectoryWorkspaceOptions
-{
-    public string WorkingDirectory { get; }
-    public string ProjectsApkDirectory { get; }
-}
-public class LocalDirectoryWorkspaceOptions : IDirectoryWorkspaceOptions
+public class DirectoryWorkspaceOptions
 {
     public string WorkspaceDirectory { get; set; } = null!;
     public string WorkingDirectory => Path.Join(WorkspaceDirectory, "Working");

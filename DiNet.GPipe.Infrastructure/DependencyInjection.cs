@@ -42,12 +42,12 @@ public static class DependencyInjection
             services.AddOptions<ScopedStorageOptions>()
                 .Bind(section);
 
-
             var sectionJdk = configuration.GetSection(nameof(JdkSettings));
-            if (!section.Exists())
+            if (!sectionJdk.Exists()) // Use sectionJdk
                 throw new Exception("JdkSettings is not configured!");
+
             services.AddOptions<JdkSettings>()
-                .Bind(section);
+                .Bind(sectionJdk);
 
 
             return services;
