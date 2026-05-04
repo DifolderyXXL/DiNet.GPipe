@@ -1,6 +1,7 @@
 ﻿using DiNet.GPipe.SharedKernel.Results;
+using DiNet.GPipe.Application.Handlers.Abstraction;
 
-namespace DiNet.GPipe.Application.Handlers.Messaging;
+namespace DiNet.GPipe.Application.Handlers.Abstraction;
 
 public interface ICommandHandler<in TCommand, TResponse>
     where TCommand : ICommand<TResponse>

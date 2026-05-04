@@ -1,4 +1,4 @@
-﻿namespace DiNet.GPipe.BackgroundWorker.Build;
+﻿namespace DiNet.GPipe.BuildingApplication.Build;
 
 public class DirectoryWorkspaceOptions
 {

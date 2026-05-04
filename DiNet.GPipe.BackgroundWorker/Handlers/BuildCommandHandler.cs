@@ -1,12 +1,11 @@
-﻿using DiNet.GPipe.BackgroundWorker.Apk;
-using DiNet.GPipe.BackgroundWorker.Build;
-using DiNet.GPipe.BackgroundWorker.Versioning;
-using DiNet.GPipe.Domain;
+﻿using DiNet.GPipe.Domain;
 using DiNet.GPipe.SharedKernel.Interfaces;
 using DiNet.GPipe.SharedKernel.Interfaces.Messaging;
 using DiNet.GPipe.SharedKernel.Models;
 using DiNet.GPipe.SharedKernel.Models.Commands;
 using Microsoft.Extensions.Options;
+using DiNet.GPipe.BuildingApplication.Apk;
+using DiNet.GPipe.BuildingApplication.Build;
 
 namespace DiNet.GPipe.BuildingApplication.Handlers;
 

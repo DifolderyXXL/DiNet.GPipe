@@ -16,7 +16,6 @@ public class AndroidStudioApkBuilder(
 
         switch(buildType){
             case ApkBuildType.ReleaseSigned:
-
                 await GradlewHelper.RunReleaseSignedBuild(projectPath, 
                     releaseBuildOptions.keystorePath, 
                     releaseBuildOptions.storePassword, 

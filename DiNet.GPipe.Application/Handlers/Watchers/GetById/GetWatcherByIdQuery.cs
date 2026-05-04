@@ -1,4 +1,4 @@
-﻿using DiNet.GPipe.Application.Handlers.Messaging;
+﻿using DiNet.GPipe.Application.Handlers.Abstraction;
 
 namespace DiNet.GPipe.Application.Handlers.Watchers.GetById;
 

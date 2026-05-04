@@ -1,11 +1,11 @@
-﻿using DiNet.GPipe.Application.Project;
-using DiNet.GPipe.Domain;
+﻿using DiNet.GPipe.Domain;
 using DiNet.GPipe.SharedKernel.Interfaces;
 using DiNet.GPipe.SharedKernel.Models;
 using DiNet.GPipe.SharedKernel.Results;
 using DiNet.GPipe.SharedKernel.Watchers;
+using DiNet.GPipe.Application.Workers;
 
-namespace DiNet.GPipe.Application.Workers;
+namespace DiNet.GPipe.Infrastructure.Workers;
 
 public class WatcherOrchestrator(
     IProjectService projectService,

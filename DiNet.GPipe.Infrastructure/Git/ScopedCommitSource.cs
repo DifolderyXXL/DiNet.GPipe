@@ -1,8 +1,9 @@
 ﻿using DiNet.GPipe.Application;
-using DiNet.GPipe.BackgroundWorker.Branches;
+using DiNet.GPipe.Application.Abstractions;
 using DiNet.GPipe.Infrastructure.Project;
 using LibGit2Sharp;
 using Microsoft.Extensions.Logging;
+using DiNet.GPipe.SharedKernel.Interfaces;
 
 namespace DiNet.GPipe.Infrastructure.Git;
 

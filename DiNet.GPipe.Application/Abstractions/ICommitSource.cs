@@ -1,4 +1,4 @@
-﻿namespace DiNet.GPipe.BackgroundWorker.Branches;
+﻿namespace DiNet.GPipe.Application.Abstractions;
 
 public interface ICommitSource
 {

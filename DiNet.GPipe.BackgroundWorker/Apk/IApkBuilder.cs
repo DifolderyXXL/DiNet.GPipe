@@ -1,6 +1,7 @@
 ﻿using DiNet.GPipe.SharedKernel.Results;
+using DiNet.GPipe.BuildingApplication.Apk;
 
-namespace DiNet.GPipe.BackgroundWorker.Apk;
+namespace DiNet.GPipe.BuildingApplication.Apk;
 
 public interface IApkBuilder
 {

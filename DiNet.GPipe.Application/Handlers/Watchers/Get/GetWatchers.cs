@@ -1,8 +1,9 @@
-﻿using DiNet.GPipe.Application.Handlers.Messaging;
-using DiNet.GPipe.SharedKernel.Results;
+﻿using DiNet.GPipe.SharedKernel.Results;
 using DiNet.GPipe.SharedKernel.Watchers;
+using DiNet.GPipe.Application.Handlers.Abstraction;
+using DiNet.GPipe.Application.Handlers.Watchers.Get;
 
-namespace DiNet.GPipe.Application.Handlers.Watchers.GetByUrl;
+namespace DiNet.GPipe.Application.Handlers.Watchers.Get;
 
 internal class GetWatchers(IProjectWatcherManager manager) : IQueryHandler<GetWatchersQuery, List<WatcherResponse>>
 {

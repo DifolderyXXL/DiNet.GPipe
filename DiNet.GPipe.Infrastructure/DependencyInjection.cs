@@ -1,12 +1,15 @@
-﻿using DiNet.GPipe.BackgroundWorker.Branches;
+﻿using DiNet.GPipe.Application.Abstractions;
+using DiNet.GPipe.Application.Workers;
 using DiNet.GPipe.Infrastructure.Database;
 using DiNet.GPipe.Infrastructure.DataRepositories;
 using DiNet.GPipe.Infrastructure.Git;
 using DiNet.GPipe.Infrastructure.Messaging;
 using DiNet.GPipe.Infrastructure.Project;
+using DiNet.GPipe.Infrastructure.Workers;
 using DiNet.GPipe.JavaBuilder.Settings;
 using DiNet.GPipe.SharedKernel.Interfaces;
 using DiNet.GPipe.SharedKernel.Interfaces.Messaging;
+using DiNet.GPipe.SharedKernel.Watchers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +23,7 @@ public static class DependencyInjection
         public IServiceCollection AddInfrastructure(IConfiguration configuration)
             => services
                 .UseEventBus()
+                .AddWatcherManagement()
                 .UseLocalDirectoryRepository(configuration)
                 .UseGit()
                 .UseDatabase(configuration);
@@ -27,6 +31,18 @@ public static class DependencyInjection
         IServiceCollection UseEventBus()
         {
             services.AddScoped<IEventBus, EventBus>();
+
+            return services;
+        }
+
+        IServiceCollection AddWatcherManagement()
+        {
+            services.AddSingleton<IProjectWatcherManager, ProjectWatcherManager>();
+            services.AddSingleton<IWorkerFactory, WorkerFactory>();
+
+            services.AddSingleton<IProjectService, ProjectService>();
+
+            services.AddScoped<IWatcherOrchestrator, WatcherOrchestrator>();
 
             return services;
         }

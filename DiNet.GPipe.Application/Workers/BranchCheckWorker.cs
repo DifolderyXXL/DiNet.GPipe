@@ -1,4 +1,5 @@
-﻿using DiNet.GPipe.BackgroundWorker.Branches;
+﻿using DiNet.GPipe.Application.Abstractions;
+using DiNet.GPipe.Application.Versions;
 using DiNet.GPipe.Domain;
 using DiNet.GPipe.SharedKernel.Interfaces;
 using DiNet.GPipe.SharedKernel.Interfaces.Messaging;

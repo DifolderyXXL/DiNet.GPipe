@@ -1,6 +1,7 @@
 ﻿using LibGit2Sharp;
+using DiNet.GPipe.BuildingApplication.Git;
 
-namespace DiNet.GPipe.BackgroundWorker.Git;
+namespace DiNet.GPipe.BuildingApplication.Git;
 
 public interface IGitRepositoryService
 {

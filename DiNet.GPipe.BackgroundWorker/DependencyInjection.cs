@@ -1,12 +1,12 @@
-﻿using DiNet.GPipe.BackgroundWorker.Apk;
-using DiNet.GPipe.BackgroundWorker.Build;
-using DiNet.GPipe.BackgroundWorker.Git;
-using DiNet.GPipe.BuildingApplication.Handlers;
+﻿using DiNet.GPipe.BuildingApplication.Handlers;
 using DiNet.GPipe.BuildingApplication.Infrastructure;
 using DiNet.GPipe.JavaBuilder;
 using DiNet.GPipe.SharedKernel.Interfaces.Messaging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using DiNet.GPipe.BuildingApplication.Apk;
+using DiNet.GPipe.BuildingApplication.Build;
+using DiNet.GPipe.BuildingApplication.Git;
 
 namespace DiNet.GPipe.BuildingApplication;
 

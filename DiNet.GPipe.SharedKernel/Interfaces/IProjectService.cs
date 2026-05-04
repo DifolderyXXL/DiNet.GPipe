@@ -2,7 +2,7 @@
 using DiNet.GPipe.SharedKernel.Results;
 using DiNet.GPipe.SharedKernel.Watchers;
 
-namespace DiNet.GPipe.Application.Project;
+namespace DiNet.GPipe.SharedKernel.Interfaces;
 
 public interface IProjectService
 {
