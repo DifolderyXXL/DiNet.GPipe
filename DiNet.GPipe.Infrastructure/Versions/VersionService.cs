@@ -1,12 +1,8 @@
-﻿using DiNet.GPipe.Domain;
+﻿using DiNet.GPipe.Application.Versions;
+using DiNet.GPipe.Domain;
 using DiNet.GPipe.SharedKernel.Interfaces;
 
-namespace DiNet.GPipe.Application.Versions;
-
-public class VersionData
-{
-    public BuildVersion Latest { get; set; } = new BuildVersion(0, 0, 0);
-}
+namespace DiNet.GPipe.Infrastructure.Versions;
 public class VersionService(IDataRepository<VersionData> repository) : IVersionService
 {
     public BuildVersion Put(BranchVersion version)
@@ -25,16 +21,5 @@ public class VersionService(IDataRepository<VersionData> repository) : IVersionS
 
         return vers.Latest;
     }
-}
-
-public static class BoolExtensions 
-{
-    extension(bool state)
-    {
-        public int ToInt()
-        {
-            return state ? 1 : 0;
-        }
-    }    
 }
 

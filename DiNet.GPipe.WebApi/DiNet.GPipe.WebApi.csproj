@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DiNet.GPipe.Application\DiNet.GPipe.Application.csproj" />
-    <ProjectReference Include="..\DiNet.GPipe.BackgroundWorker\DiNet.GPipe.BuildingApplication.csproj" />
     <ProjectReference Include="..\DiNet.GPipe.Infrastructure\DiNet.GPipe.Infrastructure.csproj" />
     <ProjectReference Include="..\DiNet.GPipe.SharedKernel\DiNet.GPipe.SharedKernel.csproj" />
   </ItemGroup>

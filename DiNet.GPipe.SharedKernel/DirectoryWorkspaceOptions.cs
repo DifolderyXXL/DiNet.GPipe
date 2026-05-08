@@ -1,4 +1,4 @@
-﻿namespace DiNet.GPipe.BuildingApplication.Build;
+﻿namespace DiNet.GPipe.SharedKernel;
 
 public class DirectoryWorkspaceOptions
 {

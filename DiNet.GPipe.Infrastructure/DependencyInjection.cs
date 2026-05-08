@@ -1,15 +1,24 @@
 ﻿using DiNet.GPipe.Application.Abstractions;
+using DiNet.GPipe.Application.Versions;
 using DiNet.GPipe.Application.Workers;
+using DiNet.GPipe.BuildingApplication.Apk;
+using DiNet.GPipe.BuildingApplication.Handlers;
+using DiNet.GPipe.BuildingApplication.Infrastructure;
+using DiNet.GPipe.Infrastructure.Building;
 using DiNet.GPipe.Infrastructure.Database;
 using DiNet.GPipe.Infrastructure.DataRepositories;
 using DiNet.GPipe.Infrastructure.Git;
 using DiNet.GPipe.Infrastructure.Messaging;
 using DiNet.GPipe.Infrastructure.Project;
+using DiNet.GPipe.Infrastructure.Versions;
 using DiNet.GPipe.Infrastructure.Workers;
+using DiNet.GPipe.JavaBuilder;
 using DiNet.GPipe.JavaBuilder.Settings;
+using DiNet.GPipe.SharedKernel;
 using DiNet.GPipe.SharedKernel.Interfaces;
 using DiNet.GPipe.SharedKernel.Interfaces.Messaging;
 using DiNet.GPipe.SharedKernel.Watchers;
+using LibGit2Sharp;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +35,17 @@ public static class DependencyInjection
                 .AddWatcherManagement()
                 .UseLocalDirectoryRepository(configuration)
                 .UseGit()
+                .UseGradlewBuilding()
+                .UseLocalIsolatedBuilding(configuration)
+                .UseProjectStorage()
+                .AddVersions()
                 .UseDatabase(configuration);
+
+        IServiceCollection AddVersions()
+        {
+            services.AddScoped<IVersionService, VersionService>();
+            return services;
+        }
 
         IServiceCollection UseEventBus()
         {
@@ -59,18 +78,35 @@ public static class DependencyInjection
                 .Bind(section);
 
             var sectionJdk = configuration.GetSection(nameof(JdkSettings));
-            if (!sectionJdk.Exists()) // Use sectionJdk
+            if (!sectionJdk.Exists())
                 throw new Exception("JdkSettings is not configured!");
 
             services.AddOptions<JdkSettings>()
                 .Bind(sectionJdk);
 
 
+
+            var releaseSection = configuration.GetSection(nameof(SignedReleaseBuildOptions));
+            if (!releaseSection.Exists())
+                throw new Exception("SignedReleaseBuildOptions is not configured!");
+            services.AddOptions<SignedReleaseBuildOptions>()
+                .Bind(releaseSection);
+
+
+            return services;
+        }
+
+        IServiceCollection UseProjectStorage()
+        {
+            services.AddScoped<IApkProjectStorage, ApkProjectStorage>();
+
             return services;
         }
 
         IServiceCollection UseGit()
         {
+            services.AddScoped<IGitRepositoryService, LibGit2RepositoryService>();
+
             services.AddScoped<ICommitSource, ScopedCommitSource>();
 
             services.AddScoped<IProjectScopeContext, ProjectScopeContext>();
@@ -92,6 +128,27 @@ public static class DependencyInjection
 
             services.AddScoped<IProjectsRepository, ProjectsRepository>();
             services.AddScoped<IBuildRegistryRepository, BuildRegistryRepository>();
+
+            return services;
+        }
+
+        IServiceCollection UseGradlewBuilding()
+        {
+            services.AddScoped<IApkBuilder, GradleApkBuilder>();
+            return services;
+        }
+
+        IServiceCollection UseLocalIsolatedBuilding(IConfiguration configuration) 
+        {
+
+            var workspaceSection = configuration.GetSection(nameof(DirectoryWorkspaceOptions));
+            if (!workspaceSection.Exists())
+                throw new Exception("DirectoryWorkspaceOptions is not configured!");
+            services.AddOptions<DirectoryWorkspaceOptions>()
+                .Bind(workspaceSection);
+
+            services.AddScoped<IIsolatedBuilder, IsolatedSpaceBuilder>();
+            services.AddScoped<IBuildWorkspace, LocalBuildWorkspace>();
 
             return services;
         }

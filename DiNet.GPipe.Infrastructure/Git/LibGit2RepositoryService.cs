@@ -1,14 +1,9 @@
-﻿using LibGit2Sharp;
-using DiNet.GPipe.BuildingApplication.Git;
+﻿using DiNet.GPipe.Application.Abstractions;
+using LibGit2Sharp;
 
-namespace DiNet.GPipe.BuildingApplication.Git;
+namespace DiNet.GPipe.Infrastructure.Git;
 
-public interface IGitRepositoryService
-{
-    public Task EnsureWorktreeCommit(string repositoryUrl, string directory, string commitHash, CancellationToken cancellation);
-}
-
-public class GitRepositoryService: IGitRepositoryService
+public class LibGit2RepositoryService: IGitRepositoryService
 {
     public async Task EnsureWorktreeCommit(string repositoryUrl, string directory, string commitHash, CancellationToken cancellation)
     {

@@ -1,9 +1,6 @@
-﻿using DiNet.GPipe.Application.Project;
-using DiNet.GPipe.Application.Versions;
-using DiNet.GPipe.Application.Workers;
-using DiNet.GPipe.SharedKernel.Watchers;
+﻿using DiNet.GPipe.Application.Handlers.Abstraction;
+using DiNet.GPipe.SharedKernel.Interfaces.Messaging;
 using Microsoft.Extensions.DependencyInjection;
-using DiNet.GPipe.Application.Handlers.Abstraction;
 
 namespace DiNet.GPipe.Application;
 
@@ -14,13 +11,8 @@ public static class DependencyInjection
         public IServiceCollection AddApplication()
         => services
             .AddCommandHandlers()
-            .AddVersions();
+            .AddEventHandlers();
 
-        IServiceCollection AddVersions()
-        {
-            services.AddScoped<IVersionService, VersionService>();
-            return services;
-        }
 
         IServiceCollection AddCommandHandlers()
         {
@@ -41,5 +33,15 @@ public static class DependencyInjection
             return services;
         }
 
+        IServiceCollection AddEventHandlers()
+        {
+            services.Scan(scan => scan.FromAssembliesOf(typeof(DependencyInjection))
+                .AddClasses(classes => classes.AssignableTo(typeof(IAsyncEventHandler<>)), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            );
+
+            return services;
+        }
     }
 }

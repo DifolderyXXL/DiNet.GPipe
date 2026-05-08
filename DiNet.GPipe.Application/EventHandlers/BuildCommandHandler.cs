@@ -1,35 +1,10 @@
 ﻿using DiNet.GPipe.Domain;
 using DiNet.GPipe.SharedKernel.Interfaces;
 using DiNet.GPipe.SharedKernel.Interfaces.Messaging;
-using DiNet.GPipe.SharedKernel.Models;
 using DiNet.GPipe.SharedKernel.Models.Commands;
-using Microsoft.Extensions.Options;
-using DiNet.GPipe.BuildingApplication.Apk;
-using DiNet.GPipe.BuildingApplication.Build;
+using DiNet.GPipe.Infrastructure.Building;
 
 namespace DiNet.GPipe.BuildingApplication.Handlers;
-
-
-public interface IApkProjectStorage 
-{
-    public Task<IApkFile> Store(IApkFile file, string projectName, string commitHash, CancellationToken ct);
-}
-
-public class ApkProjectStorage(IOptions<DirectoryWorkspaceOptions> workspace) : IApkProjectStorage
-{
-    public async Task<IApkFile> Store(IApkFile file, string projectName, string commitHash, CancellationToken ct)
-    {
-        var directory = Path.Join(workspace.Value.ProjectsApkDirectory, projectName);
-
-        Directory.CreateDirectory(directory);
-
-        var target = Path.Join(directory, $"{Path.GetFileNameWithoutExtension(file.FilePath)}_{commitHash}.apk");
-
-        await file.MoveToAsync(target, ct);
-
-        return file;
-    }
-}
 
 
 public record BuildCommand(
@@ -41,9 +16,8 @@ public record BuildCommand(
     Guid CorrelationId);
 public class BuildCommandHandler(IBuildRegistryRepository buildRepository,
                           IApkProjectStorage storage,
-                          IOptions<DirectoryWorkspaceOptions> workspace,
                           IEventBus eventBus,
-                          IsolatedSpaceBuilder isolatedSpaceBuilder) : IAsyncEventHandler<BuildCommand>
+                          IIsolatedBuilder isolatedSpaceBuilder) : IAsyncEventHandler<BuildCommand>
 {
     private readonly SemaphoreSlim _lock = new(1, 1);
 
@@ -57,8 +31,8 @@ public class BuildCommandHandler(IBuildRegistryRepository buildRepository,
 
             var result = await isolatedSpaceBuilder.BuildIsolated(
                 command.RepositoryUrl,
-                workspace.Value.WorkingDirectory,
                 command.CommitHash,
+                SharedKernel.Models.BuildType.Release,
                 ct
                 );
 
