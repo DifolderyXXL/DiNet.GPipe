@@ -1,0 +1,49 @@
+﻿@using DiNet.GPipe.Application.Handlers.Projects.Get
+
+@if (Project != null)
+{
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h4 class="mb-0">@Project.Name</h4>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="text-muted small d-block">Git URL</label>
+
+                <a href="@Project.GitUrl" target="_blank">@Project.GitUrl</a>
+            </div>
+            <div class="mb-3">
+                <label class="text-muted small d-block">Poll Interval</label>
+                <span class="badge bg-secondary">@Project.PollInterval hh:mm:ss</span>
+            </div>
+            <div class="mb-3">
+                <label class="text-muted small d-block mb-1">Branches</label>
+                <div class="ps-3">
+                    @foreach (var branch in Project.Branches)
+                    {
+                        <div class="d-flex align-items-center mb-1 py-1 px-2 rounded-2 bg-light border shadow-sm" style="max-width: 400px; font-size: 0.85rem;">
+                
+                            <i class="bi bi-diagram-2 text-primary me-2" style="font-size: 0.75rem;"></i>
+                
+                            <div class="flex-grow-1">
+                                <span class="fw-semibold text-dark">@branch.Name</span>
+                            </div>
+
+                            <div class="ms-2">
+                                <span class="badge bg-secondary opacity-75" style="font-size: 0.7rem; padding: 0.2em 0.5em;">
+                                    @branch.version
+                                </span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public ProjectResponse? Project { get; set; }
+}

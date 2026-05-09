@@ -10,13 +10,12 @@ namespace DiNet.GPipe.Infrastructure.Workers;
 public class WatcherOrchestrator(
     IProjectService projectService,
     IProjectsRepository projectRepository,
-    IProjectWatcherManager watcherManager,
-    IProjectsRepository projectsRepository
+    IProjectWatcherManager watcherManager
 ) : IWatcherOrchestrator
 {
     public async Task InitializeAsync(CancellationToken ct)
     {
-        var projects = await projectsRepository.QueryAll();
+        var projects = await projectRepository.QueryAll();
         foreach (var project in projects)
         {
             if(project.WatcherSettings.IsActive)

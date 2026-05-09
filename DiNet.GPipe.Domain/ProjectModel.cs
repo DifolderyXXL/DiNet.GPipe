@@ -10,8 +10,10 @@ public class ProjectModel
 
     public List<BranchWatcherConfig> BranchConfigs { get; set; } = [];
 
+    public List<CommitEntry> Commits { get; set; } = [];
     public List<BuildRegistry> Builds { get; set; } = [];
 }
+
 
 public class WatcherSettings
 {

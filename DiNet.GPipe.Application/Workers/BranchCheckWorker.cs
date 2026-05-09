@@ -73,8 +73,11 @@ public class BranchCheckWorker (WatcherParameters parameters,
 
             var command = new CommitDetected(
                commitSource.ProjectName,
+               commitSource.ProjectId,
                commit.branch.BranchName,
                commit.commit.Hash,
+               commit.commit.Name,
+               commit.commit.Date,
                version,
                Guid.NewGuid()
                );
@@ -82,7 +85,7 @@ public class BranchCheckWorker (WatcherParameters parameters,
             var registry = new BuildRegistry {
                 CommitHash = commit.commit.Hash,
                 CommitDate = commit.commit.Date,
-                Project = parameters.Project,
+                ProjectId = parameters.Project.Id,
                 Status = BuildStatus.Pending,
                 Version = version,
             };

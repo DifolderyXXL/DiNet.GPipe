@@ -1,12 +1,8 @@
 <Solution>
   <Folder Name="/App/">
-    <Project Path="DiNet.GPipe.Application/DiNet.GPipe.Application.csproj" Id="eea81197-2084-4475-a435-4b92d53692dc">
-      <Build Solution="Debug|*" Project="false" />
-    </Project>
+    <Project Path="DiNet.GPipe.Application/DiNet.GPipe.Application.csproj" Id="eea81197-2084-4475-a435-4b92d53692dc" />
     <Project Path="DiNet.GPipe.Domain/DiNet.GPipe.Domain.csproj" />
-    <Project Path="DiNet.GPipe.Infrastructure/DiNet.GPipe.Infrastructure.csproj" Id="5bed1774-f07b-4955-8db6-518d3d048ddc">
-      <Build Solution="Debug|*" Project="false" />
-    </Project>
+    <Project Path="DiNet.GPipe.Infrastructure/DiNet.GPipe.Infrastructure.csproj" Id="5bed1774-f07b-4955-8db6-518d3d048ddc" />
     <Project Path="DiNet.GPipe.SharedKernel/DiNet.GPipe.SharedKernel.csproj" Id="45c5064c-f419-4bee-ba83-68bc74d53f56" />
   </Folder>
   <Folder Name="/Common/">
@@ -19,8 +15,9 @@
     <Project Path="DiNet.GPipe.Tests/DiNet.GPipe.Tests.csproj" Id="26a4c58e-aced-45d4-8a1b-523ff226aa10" />
   </Folder>
   <Folder Name="/Web/">
-    <Project Path="DiNet.GPipe.WebApi/DiNet.GPipe.WebApi.csproj" Id="fd850a0b-7da8-4091-97ec-65e221c342a8">
-      <Build Solution="Debug|*" Project="false" />
-    </Project>
+    <Project Path="DiNet.GPipe.Dashboard/DiNet.GPipe.Dashboard.csproj" />
+    <Project Path="DiNet.GPipe.WebApi/DiNet.GPipe.WebApi.csproj" Id="fd850a0b-7da8-4091-97ec-65e221c342a8" />
   </Folder>
+  <Project Path="DiNet.GPipe.AppHost/DiNet.GPipe.AppHost.csproj" Id="2a8452c7-98d1-40a6-871e-57d5c56c3626" />
+  <Project Path="DiNet.GPipe.ServiceDefaults/DiNet.GPipe.ServiceDefaults.csproj" />
 </Solution>

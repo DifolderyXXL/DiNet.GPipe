@@ -129,6 +129,9 @@ public static class DependencyInjection
             services.AddScoped<IProjectsRepository, ProjectsRepository>();
             services.AddScoped<IBuildRegistryRepository, BuildRegistryRepository>();
 
+            services.AddScoped<IActivityRepository, ActivityRepository>();
+            services.AddScoped<ICommitsRepository, CommitsRepository>();
+
             return services;
         }
 

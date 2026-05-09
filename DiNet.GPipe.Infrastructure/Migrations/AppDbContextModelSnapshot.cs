@@ -41,6 +41,35 @@ namespace DiNet.GPipe.Infrastructure.Migrations
                     b.ToTable("BranchWatcherConfigs");
                 });
 
+            modelBuilder.Entity("DiNet.GPipe.Domain.Build", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("BuildType")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("CommitId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Builds", (string)null);
+
+                    b.HasDiscriminator<string>("BuildType").HasValue("Build");
+
+                    b.UseTphMappingStrategy();
+                });
+
             modelBuilder.Entity("DiNet.GPipe.Domain.BuildRegistry", b =>
                 {
                     b.Property<string>("CommitHash")
@@ -76,6 +105,47 @@ namespace DiNet.GPipe.Infrastructure.Migrations
                     b.ToTable("BuildRegistries");
                 });
 
+            modelBuilder.Entity("DiNet.GPipe.Domain.CommitEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Hash")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("INTEGER");
+
+                    b.ComplexProperty(typeof(Dictionary<string, object>), "BuildVersion", "DiNet.GPipe.Domain.CommitEntry.BuildVersion#BuildVersion", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<int>("alpha")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<int>("beta")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<int>("release")
+                                .HasColumnType("INTEGER");
+                        });
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("CommitEntries");
+                });
+
             modelBuilder.Entity("DiNet.GPipe.Domain.ProjectModel", b =>
                 {
                     b.Property<int>("Id")
@@ -99,6 +169,35 @@ namespace DiNet.GPipe.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Projects");
+                });
+
+            modelBuilder.Entity("DiNet.GPipe.Domain.TestEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CommitId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("CompletedSuccessfully")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ErrorText")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommitId");
+
+                    b.ToTable("TestEntries");
                 });
 
             modelBuilder.Entity("DiNet.GPipe.Domain.WatcherSettings", b =>
@@ -127,6 +226,34 @@ namespace DiNet.GPipe.Infrastructure.Migrations
                     b.ToTable("WatcherSettings");
                 });
 
+            modelBuilder.Entity("DiNet.GPipe.Domain.FailedBuild", b =>
+                {
+                    b.HasBaseType("DiNet.GPipe.Domain.Build");
+
+                    b.Property<string>("ErrorText")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("TEXT");
+
+                    b.HasIndex("CommitId");
+
+                    b.HasDiscriminator().HasValue("failure");
+                });
+
+            modelBuilder.Entity("DiNet.GPipe.Domain.SuccessfullBuild", b =>
+                {
+                    b.HasBaseType("DiNet.GPipe.Domain.Build");
+
+                    b.Property<string>("ApkUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.HasIndex("CommitId");
+
+                    b.HasDiscriminator().HasValue("success");
+                });
+
             modelBuilder.Entity("DiNet.GPipe.Domain.BranchWatcherConfig", b =>
                 {
                     b.HasOne("DiNet.GPipe.Domain.ProjectModel", null)
@@ -147,6 +274,24 @@ namespace DiNet.GPipe.Infrastructure.Migrations
                     b.Navigation("Project");
                 });
 
+            modelBuilder.Entity("DiNet.GPipe.Domain.CommitEntry", b =>
+                {
+                    b.HasOne("DiNet.GPipe.Domain.ProjectModel", null)
+                        .WithMany("Commits")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DiNet.GPipe.Domain.TestEntry", b =>
+                {
+                    b.HasOne("DiNet.GPipe.Domain.CommitEntry", null)
+                        .WithMany("TestEntries")
+                        .HasForeignKey("CommitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("DiNet.GPipe.Domain.WatcherSettings", b =>
                 {
                     b.HasOne("DiNet.GPipe.Domain.ProjectModel", null)
@@ -156,11 +301,40 @@ namespace DiNet.GPipe.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("DiNet.GPipe.Domain.FailedBuild", b =>
+                {
+                    b.HasOne("DiNet.GPipe.Domain.CommitEntry", null)
+                        .WithMany("FailedBuilds")
+                        .HasForeignKey("CommitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DiNet.GPipe.Domain.SuccessfullBuild", b =>
+                {
+                    b.HasOne("DiNet.GPipe.Domain.CommitEntry", null)
+                        .WithMany("SuccessfullBuilds")
+                        .HasForeignKey("CommitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DiNet.GPipe.Domain.CommitEntry", b =>
+                {
+                    b.Navigation("FailedBuilds");
+
+                    b.Navigation("SuccessfullBuilds");
+
+                    b.Navigation("TestEntries");
+                });
+
             modelBuilder.Entity("DiNet.GPipe.Domain.ProjectModel", b =>
                 {
                     b.Navigation("BranchConfigs");
 
                     b.Navigation("Builds");
+
+                    b.Navigation("Commits");
 
                     b.Navigation("WatcherSettings")
                         .IsRequired();

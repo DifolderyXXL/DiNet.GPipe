@@ -1,0 +1,69 @@
+﻿@page "/"
+@using DiNet.GPipe.Application.Handlers.Projects.Get
+@using DiNet.GPipe.Dashboard.Api
+@using DiNet.GPipe.Dashboard.Components.Pages.Common
+@using DiNet.GPipe.Dashboard.Models
+
+@implements IDisposable
+
+@inject WebApi Api
+@inject AppState State
+
+@rendermode InteractiveServer
+
+<PageTitle>Projects</PageTitle>
+
+
+<div class="d-flex" style=" gap: 2rem; min-height: 0;">
+    <div class="project-sidebar border-end" style="width: 200px; min-height: 0; display: flex; flex-direction: column;">
+        <nav class="nav flex-column p-2">
+            @if (_projects != null)
+            {
+                @foreach (var project in _projects)
+                {
+                    <div class="mb-2">
+                        <button class="nav-link btn w-100 text-start border-2 @(State.SelectedProject?.Id == project.Id ? "btn-primary text-white" : "btn-outline-primary")"
+                                @onclick="() => State.SelectProject(project)"
+                                @onclick:stopPropagation="true">
+                            <span class="bi bi-folder-fill me-2"></span> @project.Name
+                        </button>
+                    </div>
+                }
+            }
+        </nav>
+    </div>
+
+    <div class="flex-grow-1" style="overflow-y: auto; min-height: 0;">
+        @if (State.SelectedProject == null)
+        {
+            <div class="alert alert-info">Выберите проект из списка слева.</div>
+        }
+        else
+        {
+            <ProjectModelView Project="@State.SelectedProject"/>
+           
+            <ProjectCommitsModelView ProjectId="@State.SelectedProject.Id" />
+        }
+    </div>
+</div>
+
+    
+
+@code {
+    ProjectResponse[]? _projects;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _projects = (await Api.GetProjects(default));
+
+
+        //_projects = Enumerable.Range(0, 2).Select(x => new ProjectResponse(x, "Dad" + x, "url/url" + x, true, TimeSpan.Zero, [new("gena", Domain.BranchVersion.Beta)])).ToArray();
+
+        State.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= StateHasChanged;
+    }
+}

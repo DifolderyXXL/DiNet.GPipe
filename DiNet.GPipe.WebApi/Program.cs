@@ -1,6 +1,7 @@
 using DiNet.GPipe.Application;
 using DiNet.GPipe.Application.Workers;
 using DiNet.GPipe.BuildingApplication;
+using DiNet.GPipe.Domain;
 using DiNet.GPipe.Infrastructure;
 using DiNet.GPipe.Infrastructure.Database;
 using DiNet.GPipe.WebApi.Extensions;
@@ -10,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.AddServiceDefaults();
 
 
 builder.Services.AddApplication();
@@ -24,6 +27,8 @@ builder.Services.AddOpenApi();
 
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 using (var scope = app.Services.CreateScope())
 {
@@ -42,8 +47,6 @@ using (var scope = app.Services.CreateScope())
 
     await orchestration.InitializeAsync(default);
 }
-
-
 
 app.MapEndpoints();
 

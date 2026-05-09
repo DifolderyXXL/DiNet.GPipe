@@ -5,6 +5,7 @@ using DiNet.GPipe.SharedKernel.Models;
 using DiNet.GPipe.SharedKernel.Watchers;
 using Microsoft.Extensions.DependencyInjection;
 using DiNet.GPipe.SharedKernel.Interfaces;
+using DiNet.GPipe.Infrastructure.Database;
 
 namespace DiNet.GPipe.Infrastructure.Workers;
 

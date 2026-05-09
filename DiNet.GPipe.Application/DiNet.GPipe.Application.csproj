@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Folder Include="EventHandlers\Abstraction\" />
+    <Folder Include="Handlers\Activity\" />
   </ItemGroup>
 
 </Project>
