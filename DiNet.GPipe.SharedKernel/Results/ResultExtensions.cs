@@ -21,6 +21,7 @@ public static class ResultExtensions
             return result.IsSuccess ? onSuccess() : onFailure(result);
         }
     }
+   
 
     extension<TIn>(Result<TIn> result)
     {

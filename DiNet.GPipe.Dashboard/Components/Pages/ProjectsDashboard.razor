@@ -1,8 +1,11 @@
 ﻿@page "/"
+@using BlazorBootstrap
 @using DiNet.GPipe.Application.Handlers.Projects.Get
 @using DiNet.GPipe.Dashboard.Api
 @using DiNet.GPipe.Dashboard.Components.Pages.Common
 @using DiNet.GPipe.Dashboard.Models
+@using DiNet.GPipe.Dashboard.Models.Forms
+@using DiNet.GPipe.SharedKernel.Watchers
 
 @implements IDisposable
 
@@ -12,21 +15,64 @@
 @rendermode InteractiveServer
 
 <PageTitle>Projects</PageTitle>
+<style>
+    .project-sidebar {
+        width: 200px;
+        max-width: 200px;
+        overflow-x: hidden;
+        flex-shrink: 0;
+    }
 
+        .project-sidebar nav,
+        .project-sidebar .mb-1 {
+            min-width: 0;
+            width: 100%;
+        }
+
+        .project-sidebar .btn,
+        .project-sidebar .nav-link {
+            display: flex;
+            width: 100%;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+            .project-sidebar .btn span:last-child,
+            .project-sidebar .nav-link span:last-child {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                flex: 1;
+                min-width: 0;
+            }
+
+            .project-sidebar .btn .bi,
+            .project-sidebar .nav-link .bi {
+                flex-shrink: 0;
+            }
+</style>
 
 <div class="d-flex" style=" gap: 2rem; min-height: 0;">
     <div class="project-sidebar border-end" style="width: 200px; min-height: 0; display: flex; flex-direction: column;">
         <nav class="nav flex-column p-2">
+            <button class="btn btn-primary w-100 text-start" @onclick="OpenCreateProjectForm">
+                <i class="bi bi-folder-fill me-2"></i> Add new
+            </button>
+
+            <div class="my-2 border-bottom"/>
+
             @if (_projects != null)
             {
                 @foreach (var project in _projects)
                 {
-                    <div class="mb-2">
-                        <button class="nav-link btn w-100 text-start border-2 @(State.SelectedProject?.Id == project.Id ? "btn-primary text-white" : "btn-outline-primary")"
-                                @onclick="() => State.SelectProject(project)"
-                                @onclick:stopPropagation="true">
-                            <span class="bi bi-folder-fill me-2"></span> @project.Name
-                        </button>
+                    <div class="mb-1">
+                    <button class="btn @(State.SelectedProject?.Id == project.Id ? "btn-primary" : "btn-outline-primary") w-100 text-start" @onclick="() => State.SelectProject(project)">
+                        @project.Name
+                    </button>
                     </div>
                 }
             }
@@ -40,22 +86,112 @@
         }
         else
         {
-            <ProjectModelView Project="@State.SelectedProject"/>
+            var instance = State.SelectedProject;
+            <ProjectModelView Project="@State.SelectedProject" RemoveRequested="@(async () => await RemoveProject(instance.Id))" />
            
             <ProjectCommitsModelView ProjectId="@State.SelectedProject.Id" />
         }
     </div>
 </div>
 
-    
+
+<div class="modal fade @(showCreating ? "show d-block" : "")"
+     id="createProjectModal" 
+     tabindex="-1" 
+     style="@(showCreating ? "background-color: rgba(0,0,0,0.5);" : "")"
+     @onclick:stopPropagation="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Project</h5>
+                <button type="button" class="btn-close" @onclick="CloseCreateProjectForm"></button>
+            </div>
+            <div class="modal-body">
+                <CreateProjectModelView OnSubmitSuccess="OnProjectCreated" />
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @code {
+    [Inject] protected ToastService ToastService { get; set; } = default!;
+
     ProjectResponse[]? _projects;
+    bool showCreating;
+
+    public void OpenCreateProjectForm()
+    {
+        showCreating = true;
+        StateHasChanged();
+    }
+
+    public void CloseCreateProjectForm()
+    {
+        showCreating = false;
+        StateHasChanged();
+    }
+
+    public async Task OnProjectCreated(ProjectForm Project)
+    {
+        CloseCreateProjectForm();
+
+        
+        ToastService.Notify(new(ToastType.Info, Project.GitUrl));
+
+        try
+        {
+            var status = await Api.CreateProject(
+               new(
+                   Project.Name,
+                   Project.GitUrl,
+                   Project.FastStart,
+                   Project.BranchConfigs.Select(x => new BranchConfig(x.BranchName, x.VersionType)).ToList(),
+                   Project.PollInterval
+               ),
+               default
+            );
+
+            if (status == System.Net.HttpStatusCode.OK)
+            {
+                ToastService.Notify(new(ToastType.Success, $"Project created"));
+            }
+            else
+            {
+                ToastService.Notify(new(ToastType.Info, $"Project create status: {status}"));
+            }
+
+            _projects = (await Api.GetProjects(default));
+            State.SelectProject(_projects.FirstOrDefault(x => x.Name == Project.Name));
+        }
+        catch(Exception ex)
+        {
+            ToastService.Notify(new(ToastType.Danger, ex.Message));
+        }
+
+        StateHasChanged();
+    }
+
+    async Task RemoveProject(int projectId)
+    {
+        await Api.DeleteProject(projectId, default);
+
+        _projects = (await Api.GetProjects(default));
+        State.SelectProject(null);
+
+        StateHasChanged();
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        _projects = (await Api.GetProjects(default));
-
+        try
+        {
+            _projects = (await Api.GetProjects(default));
+        }
+        catch (Exception ex)
+        {
+            ToastService.Notify(new(ToastType.Danger, ex.Message));
+        }
 
         //_projects = Enumerable.Range(0, 2).Select(x => new ProjectResponse(x, "Dad" + x, "url/url" + x, true, TimeSpan.Zero, [new("gena", Domain.BranchVersion.Beta)])).ToArray();
 

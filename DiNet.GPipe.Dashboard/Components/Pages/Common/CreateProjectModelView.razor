@@ -1,0 +1,298 @@
+﻿@using DiNet.GPipe.Dashboard.Api
+@using DiNet.GPipe.Dashboard.Models.Forms
+@using DiNet.GPipe.Domain
+@using DiNet.GPipe.SharedKernel.Watchers
+@inject IJSRuntime JSRuntime
+
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white">
+        <h4 class="mb-0">Project Configuration</h4>
+    </div>
+    <div class="card-body">
+        <!-- Project Name -->
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Project Name</label>
+            <input type="text" class="form-control @(IsInvalid(nameof(Project.Name)) ? "is-invalid" : "")"
+                   @bind="Project.Name"
+                   @bind:event="oninput"
+                   placeholder="Enter project name" />
+            @if (GetError(nameof(Project.Name)) is string nameError)
+            {
+                <div class="invalid-feedback">@nameError</div>
+            }
+        </div>
+
+        <!-- Repo Source Type -->
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Repository Source</label>
+            <div class="btn-group w-100" role="group">
+                <button type="button" class="btn btn-outline-secondary @(repoSourceType == RepoSourceType.GitUrl ? "active" : "")"
+                        @onclick="() => SetRepoSource(RepoSourceType.GitUrl)">
+                    Git URL
+                </button>
+                <button type="button" class="btn btn-outline-secondary @(repoSourceType == RepoSourceType.LocalPath ? "active" : "")"
+                        @onclick="() => SetRepoSource(RepoSourceType.LocalPath)">
+                    Local folder
+                </button>
+            </div>
+        </div>
+
+        <!-- Git URL or Local Path -->
+        <div class="mb-3">
+            @if (repoSourceType == RepoSourceType.GitUrl)
+            {
+                <label class="form-label fw-semibold">Git URL</label>
+                <input type="text" class="form-control @(IsInvalid(nameof(Project.GitUrl)) ? "is-invalid" : "")"
+                       @bind="Project.GitUrl" @bind:event="oninput"
+                       placeholder="https://github.com/user/repo.git" />
+                @if (GetError(nameof(Project.GitUrl)) is string urlError)
+                {
+                    <div class="invalid-feedback">@urlError</div>
+                }
+            }
+            else
+            {
+                <label class="form-label fw-semibold">Local folder path</label>
+                <input type="text" class="form-control @(IsInvalid("LocalPath") ? "is-invalid" : "")"
+                       @bind="localPath" @bind:event="oninput"
+                       placeholder="C:\repos\my-project or /home/user/project" />
+                <small class="text-muted">Absolute path to the local Git repository folder</small>
+                @if (GetError("LocalPath") is string pathError)
+                {
+                    <div class="invalid-feedback d-block">@pathError</div>
+                }
+            }
+        </div>
+
+
+
+        <!-- Fast Start -->
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" @bind="Project.FastStart" id="fastStartCheck" />
+            <label class="form-check-label" for="fastStartCheck">Fast Start</label>
+        </div>
+
+        <!-- Poll Interval -->
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Poll Interval (hh:mm:ss)</label>
+            <input type="text" class="form-control" @bind="PollIntervalString" placeholder="00:05:00" />
+            <small class="text-muted">Format: hours:minutes:seconds (e.g., 00:05:00 for 5 minutes)</small>
+
+            @if (GetError(nameof(Project.PollInterval)) is string pollIntervalError)
+            {
+                <div class="invalid-feedback">@pollIntervalError</div>
+            }
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold mb-2">Branches</label>
+            <div class="ps-3">
+                @for (int i = 0; i < Project.BranchConfigs.Count; i++)
+                {
+                    var branch = Project.BranchConfigs[i];
+                    var index = i;
+                    <div class="d-flex align-items-center gap-2 mb-2 p-2 rounded-2 bg-light border shadow-sm">
+                        <i class="bi bi-diagram-2 text-primary"></i>
+                        
+                        <div class="flex-grow-1">
+                            <input type="text" class="form-control form-control-sm" @bind="branch.BranchName" placeholder="Branch name (e.g., main, develop)" />
+                        </div>
+
+                        <div style="min-width: 120px;">
+                            <select class="form-select form-select-sm" @bind="branch.VersionType">
+                                @foreach (BranchVersion version in Enum.GetValues(typeof(BranchVersion)))
+                                {
+                                    <option value="@version">@version</option>
+                                }
+                            </select>
+                        </div>
+
+                        <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => RemoveBranch(index)">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                }
+            </div>
+
+            <button type="button" class="btn btn-sm btn-outline-primary mt-2" @onclick="AddBranch">
+                <i class="bi bi-plus-circle me-1"></i> Add Branch
+            </button>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4">
+            <button type="button" class="btn btn-primary" @onclick="Submit">
+                <i class="bi bi-save me-1"></i> Save Project
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private Dictionary<string, string> _validationErrors = new();
+
+    [Parameter]
+    public Func<ProjectForm, Task> OnSubmitSuccess { get; set; }
+
+    private ProjectForm Project = new();
+
+
+    private enum RepoSourceType { GitUrl, LocalPath }
+    private RepoSourceType repoSourceType = RepoSourceType.GitUrl;
+    private string localPath = "";
+
+    private void SetRepoSource(RepoSourceType type)
+    {
+        repoSourceType = type;
+        if (type == RepoSourceType.LocalPath)
+        {
+            if (string.IsNullOrEmpty(localPath) && !string.IsNullOrEmpty(Project.GitUrl))
+                localPath = Project.GitUrl;
+            RemoveError(nameof(Project.GitUrl));
+            ValidateLocalPath();
+        }
+        else
+        {
+            if (string.IsNullOrEmpty(Project.GitUrl) && !string.IsNullOrEmpty(localPath))
+                Project.GitUrl = localPath;
+            RemoveError("LocalPath");
+            ValidateField(nameof(Project.GitUrl));
+        }
+        StateHasChanged();
+    }
+
+    private void ValidateLocalPath()
+    {
+        if (string.IsNullOrWhiteSpace(localPath))
+        {
+            SetError("LocalPath", "Local folder path is required.");
+            return;
+        }
+
+        // Check if directory exists on server (use absolute path as given)
+        if (!Directory.Exists(localPath))
+            SetError("LocalPath", $"Directory does not exist: {localPath}");
+        else
+            RemoveError("LocalPath");
+    }
+
+
+    private string PollIntervalString
+    {
+        get => Project.PollInterval.ToString(@"hh\:mm\:ss");
+        set
+        {
+            if (TimeSpan.TryParseExact(value, @"hh\:mm\:ss", null, out var ts))
+                Project.PollInterval = ts;
+            else if (TimeSpan.TryParse(value, out ts))
+                Project.PollInterval = ts;
+        }
+    }
+
+    private void AddBranch()
+    {
+        var target = Enum.GetValues<BranchVersion>()
+            .Where(x => !Project.BranchConfigs.Exists(e=>e.VersionType==x))
+            .FirstOrDefault(BranchVersion.Alpha);
+
+        Project.BranchConfigs.Add(new BranchForm() { VersionType = target });
+        StateHasChanged();
+    }
+
+    private void RemoveBranch(int index)
+    {
+        if (index >= 0 && index < Project.BranchConfigs.Count)
+            Project.BranchConfigs.RemoveAt(index);
+
+        StateHasChanged();
+    }
+
+    public async Task Submit()
+    {
+        if (!ValidateAll())
+            return;
+
+        var task = OnSubmitSuccess?.Invoke(Project);
+
+        if (task != null)
+            await task;
+    }
+
+    private bool IsInvalid(string fieldName)
+    {
+        ValidateField(fieldName);
+        return _validationErrors.ContainsKey(fieldName);
+    }
+
+    private string? GetError(string fieldName)
+    {
+        ValidateField(fieldName);
+        return _validationErrors.GetValueOrDefault(fieldName);
+    }
+
+    private void SetError(string fieldName, string error)
+    {
+        if (!_validationErrors.ContainsKey(fieldName))
+            _validationErrors.Add(fieldName, error);
+        else
+            _validationErrors[fieldName] = error;
+    }
+
+    private void RemoveError(string fieldName) => _validationErrors.Remove(fieldName);
+
+
+    private void ValidateField(string fieldName)
+    {
+        switch (fieldName)
+        {
+            case nameof(Project.Name):
+                if (string.IsNullOrWhiteSpace(Project.Name))
+                    SetError(fieldName, "Project name is required.");
+                else if (Project.Name.Length < 3)
+                    SetError(fieldName, "Project name must be at least 3 characters.");
+                else
+                    RemoveError(fieldName);
+                break;
+
+                      case nameof(Project.GitUrl):
+                if (repoSourceType == RepoSourceType.GitUrl)
+                {
+                    if (string.IsNullOrWhiteSpace(Project.GitUrl))
+                        SetError(fieldName, "Git URL is required.");
+                    else if (!Uri.IsWellFormedUriString(Project.GitUrl, UriKind.Absolute))
+                        SetError(fieldName, "Please enter a valid URL (e.g., https://github.com/user/repo.git).");
+                    else
+                        RemoveError(fieldName);
+                }
+                else
+                    RemoveError(fieldName); // не валидируем GitUrl в локальном режиме
+                break;
+
+            case "LocalPath":
+                if (repoSourceType == RepoSourceType.LocalPath)
+                    ValidateLocalPath();
+                else
+                    RemoveError("LocalPath");
+                break;
+
+            case "PollIntervalString":
+                if (string.IsNullOrWhiteSpace(PollIntervalString))
+                    SetError(fieldName, "Poll interval is required.");
+                else if (!TimeSpan.TryParseExact(PollIntervalString, @"hh\:mm\:ss", null, out _) &&
+                         !TimeSpan.TryParse(PollIntervalString, out _))
+                    SetError(fieldName, "Invalid format. Use hh:mm:ss (e.g., 00:05:00).");
+                else
+                    RemoveError(fieldName);
+                break;
+        }
+    }
+
+    private bool ValidateAll()
+    {
+        ValidateField(nameof(Project.Name));
+        ValidateField(nameof(Project.GitUrl));
+        ValidateField("LocalPath");
+        ValidateField("PollIntervalString");
+        return _validationErrors.Count == 0;
+    }
+}

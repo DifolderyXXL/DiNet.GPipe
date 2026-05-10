@@ -1,7 +1,10 @@
 ﻿using DiNet.GPipe.Application.Handlers.Commits.Get;
+using DiNet.GPipe.Application.Handlers.Projects.DeleteById;
 using DiNet.GPipe.Application.Handlers.Projects.Get;
 using DiNet.GPipe.Application.Handlers.Watchers;
+using DiNet.GPipe.Application.Handlers.Watchers.Create;
 using Newtonsoft.Json;
+using System.Net;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -21,6 +24,18 @@ public class WebApi(HttpClient client)
     public async Task<CommitResponse[]> GetProjectCommits(int projectId, bool includeActivity, CancellationToken ct)
         => await client.QueryArray<CommitResponse>(
             $"/project-commits?projectId={projectId}&includeActivity={includeActivity.ToString().ToLower()}", ct);
+
+
+    public async Task<HttpStatusCode> CreateProject(CreateWatcherCommand command, CancellationToken ct)
+    {
+        return (await client.PostAsJsonAsync("/watcher", command, ct)).StatusCode;
+    }
+
+    public async Task DeleteProject(int projectId, CancellationToken ct)
+    {
+        await client.DeleteAsync($"/project?ProjectId={projectId}", ct);
+    }
+
 }
 
 public static class ApiExtensions
