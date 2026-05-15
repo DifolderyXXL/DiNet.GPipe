@@ -1,4 +1,9 @@
 ﻿@using DiNet.GPipe.Application.Handlers.Projects.Get
+@using DiNet.GPipe.Dashboard.Api
+@using DiNet.GPipe.Dashboard.Components.Pages.Common.Branch
+@using DiNet.GPipe.Dashboard.Models
+@using DiNet.GPipe.Dashboard.Models.Forms
+@using DiNet.GPipe.SharedKernel.Watchers
 
 @if (Project != null)
 {
@@ -22,36 +27,119 @@
             <div class="mb-3">
                 <label class="text-muted small d-block mb-1">Branches</label>
                 <div class="ps-3">
+
                     @foreach (var branch in Project.Branches)
                     {
-                        <div class="d-flex align-items-center mb-1 py-1 px-2 rounded-2 bg-light border shadow-sm" style="max-width: 400px; font-size: 0.85rem;">
-                
-                            <i class="bi bi-diagram-2 text-primary me-2" style="font-size: 0.75rem;"></i>
-                
-                            <div class="flex-grow-1">
-                                <span class="fw-semibold text-dark">@branch.Name</span>
-                            </div>
+                        var targetBranch = branch;
+                        <BranchEditableView branch=branch OnEdited=@((x) => BranchEdited(targetBranch.Name, x)) OnRemove=BranchRemoveRequest />
+                    }
 
-                            <div class="ms-2">
-                                <span class="badge bg-secondary opacity-75" style="font-size: 0.7rem; padding: 0.2em 0.5em;">
-                                    @branch.version
-                                </span>
-                            </div>
+                    @if (!_isAddingNewBranch)
+                    {
+                        
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" @onclick="StartAddingNewBranch">
+                            <i class="bi bi-plus-circle me-1"></i> Add Branch
+                        </button>
+                    }
+                    else
+                    {
+                        <div class="d-flex align-items-center gap-2 mb-2 p-2 rounded-2 bg-light border shadow-sm">
+                            <BranchEditView branch=_branchForm />
+
+                            
+                            <button type="button" class="btn btn-sm btn-outline-success" @onclick=CommitButton>
+                                <i class="bi bi-check"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" @onclick=CancelCreationBranch>
+                                <i class="bi bi-trash"></i>
+                            </button>
                         </div>
                     }
+
                 </div>
             </div>
+            @if(Project.IsActive)
+            {
+                <button type="button" class="btn btn-sm btn-outline-success" @onclick="()=>ChangeActiveProject(false)">
+                    <i class="bi bi-check"></i> Active
+                </button>
+            }
+            else
+            {
+                <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => ChangeActiveProject(true)">
+                    <i class="bi bi-x"></i> Inactive
+                </button>
+            }
         </div>
     </div>
 }
 
 
 @code {
-        [Parameter]
-        public Func<Task> RemoveRequested { get; set; }
+    [Inject] protected IWebApi Api { get; set; }
 
-        [Parameter]
-        public ProjectResponse? Project { get; set; }
+    [Parameter]
+    public Func<Task> RemoveRequested { get; set; }
+
+    [Parameter]
+    public ProjectState? Project { get; set; }
+
+    private BranchForm? _branchForm;
+
+    public bool _isAddingNewBranch = false;
+    public void StartAddingNewBranch()
+    {
+        _branchForm = new();
+        _isAddingNewBranch = true;
+
+        StateHasChanged();
+    }
+    public void CancelCreationBranch()
+    {
+        _branchForm = null;
+        _isAddingNewBranch = false;
+
+        StateHasChanged();
+    }
+
+    public async Task CommitButton()
+    {
+        if (Project == null || _branchForm == null)
+            return;
+
+        var branch = new BranchConfig(_branchForm.BranchName, _branchForm.VersionType);
+        Project.Branches.Add(new(branch.BranchName, branch.VersionType));
+        await Api.AddBranch(Project.Id, branch, default);
+
+        _branchForm = null;
+        _isAddingNewBranch = false;
+
+        StateHasChanged(); 
+    }
+
+    public async Task BranchEdited(string targetName, BranchDto branch)
+    {
+        if (Project == null)
+            return;
+
+        var index = Project.Branches.FindIndex(x=>x.Name==targetName);
+        Project.Branches[index] = branch;
+
+        await Api.UpdateBranch(Project.Id, targetName, new(branch.Name, branch.version), default);
+
+        StateHasChanged();
+    }
+
+    public async Task BranchRemoveRequest(BranchDto branch)
+    {
+        if (Project == null)
+            return;
+
+        await Api.RemoveBranch(Project.Id, branch.Name, default);
+
+        StateHasChanged();
+    }
+
 
     public async Task RemoveRequest()
     {
@@ -59,5 +147,26 @@
 
         if (task != null)
             await task;
+    }
+
+    public async Task RemoveBranch(string branchName)
+    {
+        if (Project == null)
+            return;
+
+        await Api.RemoveBranch(Project.Id, branchName, default);
+
+        StateHasChanged();
+    }
+
+    public async Task ChangeActiveProject(bool active)
+    {
+        if (Project == null)
+            return;
+
+        Project.IsActive = active;
+        await Api.WatcherChangeActive(Project.Id, active, default);
+
+        StateHasChanged();
     }
 }

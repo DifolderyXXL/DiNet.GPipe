@@ -1,0 +1,20 @@
+﻿@using DiNet.GPipe.Application.Handlers.Projects.Get
+
+          
+<i class="bi bi-diagram-2 text-primary me-2" style="font-size: 0.75rem;"></i>
+                
+<div class="flex-grow-1">
+    <span class="fw-semibold text-dark">@branch.Name</span>
+</div>
+
+<div class="ms-2">
+    <span class="badge bg-secondary opacity-75" style="font-size: 0.7rem; padding: 0.2em 0.5em;">
+        @branch.version
+    </span>
+</div>
+
+
+@code {
+    [Parameter]
+    public BranchDto branch { get; set; } = null!;
+}

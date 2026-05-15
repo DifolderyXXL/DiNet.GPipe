@@ -53,7 +53,14 @@ public class WatcherOrchestrator(
         project.WatcherSettings.IsActive = active;
         await projectRepository.SaveAsync();
 
-        await watcherManager.DeleteWatcherAsync(projectId, ct);
+        if (active)
+        {
+            await StartProjectWatcherInternal(project, ct);
+        }
+        else
+        {
+            await watcherManager.DeleteWatcherAsync(projectId, ct);
+        }
 
         return Result.Success();
     }

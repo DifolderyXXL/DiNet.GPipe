@@ -1,14 +1,12 @@
-﻿using DiNet.GPipe.Application.Handlers.Projects.Get;
-
-namespace DiNet.GPipe.Dashboard.Models;
+﻿namespace DiNet.GPipe.Dashboard.Models;
 
 public class AppState
 {
-    public ProjectResponse? SelectedProject { get; private set; }
+    public ProjectState? SelectedProject { get; private set; }
 
     public event Action? OnChange;
 
-    public void SelectProject(ProjectResponse? project)
+    public void SelectProject(ProjectState? project)
     {
         SelectedProject = project;
         NotifyStateChanged();

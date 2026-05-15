@@ -40,7 +40,9 @@ public class ProjectsRepository(AppDbContext context) : IProjectsRepository
 
     public async Task<ProjectModel?> Get(int id)
     {
-        return await context.Projects.Include(x=>x.WatcherSettings)
+        return await context.Projects
+            .Include(x=>x.BranchConfigs)
+            .Include(x=>x.WatcherSettings)
             .Where(x=>x.Id==id)
             .FirstOrDefaultAsync();
     }

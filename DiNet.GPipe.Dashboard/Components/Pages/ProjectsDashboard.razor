@@ -9,7 +9,7 @@
 
 @implements IDisposable
 
-@inject WebApi Api
+@inject IWebApi Api
 @inject AppState State
 
 @rendermode InteractiveServer
@@ -117,7 +117,7 @@
 @code {
     [Inject] protected ToastService ToastService { get; set; } = default!;
 
-    ProjectResponse[]? _projects;
+    ProjectState[]? _projects;
     bool showCreating;
 
     public void OpenCreateProjectForm()
@@ -136,7 +136,7 @@
     {
         CloseCreateProjectForm();
 
-        
+
         ToastService.Notify(new(ToastType.Info, Project.GitUrl));
 
         try
@@ -161,7 +161,8 @@
                 ToastService.Notify(new(ToastType.Info, $"Project create status: {status}"));
             }
 
-            _projects = (await Api.GetProjects(default));
+            
+            _projects = await FetchProjects();
             State.SelectProject(_projects.FirstOrDefault(x => x.Name == Project.Name));
         }
         catch(Exception ex)
@@ -176,7 +177,7 @@
     {
         await Api.DeleteProject(projectId, default);
 
-        _projects = (await Api.GetProjects(default));
+        _projects = await FetchProjects();
         State.SelectProject(null);
 
         StateHasChanged();
@@ -186,7 +187,7 @@
     {
         try
         {
-            _projects = (await Api.GetProjects(default));
+            _projects = await FetchProjects();
         }
         catch (Exception ex)
         {
@@ -196,6 +197,13 @@
         //_projects = Enumerable.Range(0, 2).Select(x => new ProjectResponse(x, "Dad" + x, "url/url" + x, true, TimeSpan.Zero, [new("gena", Domain.BranchVersion.Beta)])).ToArray();
 
         State.OnChange += StateHasChanged;
+    }
+
+    private async Task<ProjectState[]> FetchProjects()
+    {
+        return (await Api.GetProjects(default))
+                .Select(x => new ProjectState(x.Id, x.Name, x.GitUrl, x.IsActive, x.PollInterval, x.Branches))
+                .ToArray();
     }
 
     public void Dispose()

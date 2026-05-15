@@ -1,0 +1,23 @@
+﻿@using DiNet.GPipe.Dashboard.Models.Forms
+@using DiNet.GPipe.Domain
+
+
+<i class="bi bi-diagram-2 text-primary"></i>
+                        
+<div class="flex-grow-1">
+    <input type="text" class="form-control form-control-sm" @bind="branch.BranchName" placeholder="Branch name (e.g., main, develop)" />
+</div>
+
+<div style="min-width: 120px;">
+    <select class="form-select form-select-sm" @bind="branch.VersionType">
+        @foreach (BranchVersion version in Enum.GetValues(typeof(BranchVersion)))
+        {
+            <option value="@version">@version</option>
+        }
+    </select>
+</div>
+
+@code {
+    [Parameter]
+    public BranchForm branch { get; set; } = null!;
+}

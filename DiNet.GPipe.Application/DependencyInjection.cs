@@ -1,4 +1,5 @@
 ﻿using DiNet.GPipe.Application.Handlers.Abstraction;
+using DiNet.GPipe.Application.Service;
 using DiNet.GPipe.SharedKernel.Interfaces.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,7 +12,8 @@ public static class DependencyInjection
         public IServiceCollection AddApplication()
         => services
             .AddCommandHandlers()
-            .AddEventHandlers();
+            .AddEventHandlers()
+            .AddServices();
 
 
         IServiceCollection AddCommandHandlers()
@@ -40,6 +42,13 @@ public static class DependencyInjection
                 .AsImplementedInterfaces()
                 .WithScopedLifetime()
             );
+
+            return services;
+        }
+
+        IServiceCollection AddServices()
+        {
+            services.AddScoped<ProjectService>();
 
             return services;
         }

@@ -1,0 +1,66 @@
+﻿@using DiNet.GPipe.Application.Handlers.Projects.Get
+@using DiNet.GPipe.Dashboard.Models.Forms
+
+<div class="d-flex align-items-center mb-1 py-1 px-2 rounded-2 bg-light border shadow-sm" style="font-size: 0.85rem;">            
+    @if (!_isEditing)
+    {   
+        <BranchModelView branch=branch />
+
+        <button type="button" class="btn btn-sm btn-outline-success" @onclick=StartEditing>
+            <i class="bi bi-pen"></i>
+        </button>
+    }
+    else
+    {
+        <BranchEditView branch=_branchForm/>
+
+        <button type="button" class="btn btn-sm btn-outline-warning" @onclick=StopEditing>
+            <i class="bi bi-pen"></i>
+        </button>
+    }
+
+    
+    <button type="button" class="btn btn-sm btn-outline-danger" @onclick=RemoveBranch>
+        <i class="bi bi-trash"></i>
+    </button>
+</div>
+
+@code {
+    [Parameter]
+    public BranchDto branch { get; set; } = null!;
+
+    [Parameter]
+    public Func<BranchDto, Task>? OnEdited { get; set; }
+
+    [Parameter]
+    public Func<BranchDto, Task>? OnRemove { get; set; }
+
+    private bool _isEditing = false;
+
+    private BranchForm _branchForm = new();
+
+    public void StartEditing()
+    {
+        _isEditing = true;
+        _branchForm.BranchName = branch.Name;
+        _branchForm.VersionType = branch.version;
+
+        StateHasChanged();
+    }
+
+    public async Task StopEditing()
+    {
+        _isEditing = false;
+
+        var task = OnEdited?.Invoke(new BranchDto(_branchForm.BranchName, _branchForm.VersionType));
+        if (task != null)
+            await task;
+    }
+
+    public async Task RemoveBranch()
+    {
+        var task = OnRemove?.Invoke(branch);
+        if (task != null)
+            await task;
+    }
+}

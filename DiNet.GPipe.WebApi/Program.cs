@@ -1,7 +1,5 @@
 using DiNet.GPipe.Application;
 using DiNet.GPipe.Application.Workers;
-using DiNet.GPipe.BuildingApplication;
-using DiNet.GPipe.Domain;
 using DiNet.GPipe.Infrastructure;
 using DiNet.GPipe.Infrastructure.Database;
 using DiNet.GPipe.WebApi.Extensions;
@@ -25,8 +23,18 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+builder.Services.AddSwaggerGen();
+
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.MapSwagger();
 
 app.MapDefaultEndpoints();
 

@@ -13,10 +13,12 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddScoped<AppState>();
 
-builder.Services.AddHttpClient<WebApi>(client =>
+//builder.Services.AddSingleton<IWebApi, MockWebApi>();
+builder.Services.AddHttpClient<IWebApi, WebApi>(client =>
 {
     client.BaseAddress = new("https+http://dinet-gpipe-webapi");
 });
+
 builder.Services.AddBlazorBootstrap();
 
 var app = builder.Build();

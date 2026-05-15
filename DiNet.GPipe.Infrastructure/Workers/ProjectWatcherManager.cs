@@ -42,8 +42,17 @@ public class ProjectWatcherManager(IWorkerFactory workerFactory) : IProjectWatch
         return null;
     }
 
+    public async Task UpdateBranches(int id, List<BranchConfig> branches, CancellationToken ct)
+    {
+        if(_watchers.TryGetValue(id, out var entry))
+        {
+            entry.Watcher.Branches.Clear();
+            entry.Watcher.Branches.AddRange(branches);
+        }
+    }
+
     public async Task UpdateIntervalAsync(string branchName, CancellationToken ct)
     {
-
+        throw new NotImplementedException();
     }
 }

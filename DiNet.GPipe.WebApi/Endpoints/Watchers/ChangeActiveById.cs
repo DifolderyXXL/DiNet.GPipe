@@ -9,7 +9,7 @@ public class ChangeActiveById : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("/watchers/chengeactive/{id}/{activeState}", 
+        app.MapPost("/watchers/{id}/chengeactive", 
         async (
             int id,
             bool activeState,
