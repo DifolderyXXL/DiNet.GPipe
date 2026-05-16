@@ -1,6 +1,6 @@
 ﻿@using DiNet.GPipe.Application.Handlers.Projects.Get
 @using DiNet.GPipe.Dashboard.Api
-@using DiNet.GPipe.Dashboard.Components.Pages.Common.Branch
+@using DiNet.GPipe.Dashboard.Components.Pages.ProjectScope.Branch
 @using DiNet.GPipe.Dashboard.Models
 @using DiNet.GPipe.Dashboard.Models.Forms
 @using DiNet.GPipe.SharedKernel.Watchers
@@ -10,7 +10,7 @@
     <div class="card shadow-sm">
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
             <h4 class="mb-0">@Project.Name</h4>
-            <button type="button" class="btn btn-sm btn-outline-danger" @onclick="RemoveRequest">
+            <button type="button" class="btn btn-sm btn-outline-danger" @onclick=RemoveRequest>
                 <i class="bi bi-trash"></i>
             </button>
         </div>
@@ -37,7 +37,9 @@
                     @if (!_isAddingNewBranch)
                     {
                         
-                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" @onclick="StartAddingNewBranch">
+                        <button type="button"
+                                class="btn btn-sm btn-outline-primary mt-2"
+                                @onclick=StartAddingNewBranch>
                             <i class="bi bi-plus-circle me-1"></i> Add Branch
                         </button>
                     }
@@ -58,6 +60,7 @@
 
                 </div>
             </div>
+            
             @if(Project.IsActive)
             {
                 <button type="button" class="btn btn-sm btn-outline-success" @onclick="()=>ChangeActiveProject(false)">

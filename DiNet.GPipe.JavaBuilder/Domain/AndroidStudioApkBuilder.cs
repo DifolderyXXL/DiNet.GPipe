@@ -5,7 +5,8 @@ namespace DiNet.GPipe.JavaBuilder.Domain;
 
 public class AndroidStudioApkBuilder(
     JdkSettings jdkSettings,
-    SignedReleaseBuildOptions releaseBuildOptions)
+    SignedReleaseBuildOptions releaseBuildOptions,
+    IProcessLogger? processLogger = null)
 {
     private readonly JdkSettings _jdkSettings = jdkSettings;
 
@@ -23,7 +24,7 @@ public class AndroidStudioApkBuilder(
                     releaseBuildOptions.keyPassword);
                 break;
             case ApkBuildType.Debug:
-                await GradlewHelper.RunCleanBuild(projectPath, buildType, token);
+                await GradlewHelper.RunCleanBuild(projectPath, buildType, processLogger, token);
                 break;
         }
 

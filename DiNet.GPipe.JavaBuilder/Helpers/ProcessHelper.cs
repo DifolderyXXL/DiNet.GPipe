@@ -1,13 +1,13 @@
 ﻿using System.Diagnostics;
 
 namespace DiNet.GPipe.JavaBuilder.Helpers;
-
 public static class ProcessHelper
 {
     public static async Task RunProcess(
         string fileName, 
         string arguments, 
         string workingDirectory, 
+        IProcessLogger? logger = null,
         CancellationToken token = default)
     {
         using (var process = new Process())
@@ -25,13 +25,12 @@ public static class ProcessHelper
 
             process.OutputDataReceived += (sender, args) =>
             {
-                Console.WriteLine($"[{sender}][{args.Data}]");
+                logger?.LogData(sender, args.Data);
             };
 
             process.ErrorDataReceived += (sender, args) =>
             {
-
-                Console.WriteLine($"[{sender}][{args.Data}]");
+                logger?.LogError(sender, args.Data);
             };
 
             process.Start();
