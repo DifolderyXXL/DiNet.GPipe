@@ -3,14 +3,12 @@ using DiNet.GPipe.Application.Service;
 using DiNet.GPipe.SharedKernel.Results;
 
 namespace DiNet.GPipe.Application.Handlers.Branches.RemoveByProjectId;
-internal class RemoveByProjectIdHandler(ProjectService service) : ICommandHandler<RemoveBranchByNameCommand>
+internal class RemoveByProjectIdHandler(BranchManagementService service) : ICommandHandler<RemoveBranchByNameCommand>
 {
     public async Task<Result> Handle(RemoveBranchByNameCommand command, CancellationToken ct)
     {
         var result = await service.RemoveBranch(command.ProjectId, command.BranchName);
 
-        return result
-            ? Result.Success()
-            : Result.Failure(new Error("Can't remove branch: " + command.BranchName, ErrorType.Problem));
+        return result;
     }
 }

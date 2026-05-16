@@ -1,48 +1,44 @@
-﻿using DiNet.GPipe.Domain;
+﻿using DiNet.GPipe.Application.Project;
+using DiNet.GPipe.Domain;
 using DiNet.GPipe.SharedKernel.Interfaces;
+using DiNet.GPipe.SharedKernel.Results;
 using DiNet.GPipe.SharedKernel.Watchers;
 
 namespace DiNet.GPipe.Application.Service;
 
-public class ProjectService(IProjectsRepository projectsRepository, IProjectWatcherManager manager)
+public class BranchManagementService(IProjectsRepository projectsRepository, ProjectWatcherService projectWatcherService)
 {
-    private async Task UpdateBranches(ProjectModel project)
-    {
-        await manager.UpdateBranches(
-            project.Id,
-            project.BranchConfigs.Select(x => new BranchConfig(x.BranchName, x.VersionType)).ToList(),
-            default);
-    }
-
-    public async Task<bool> AddBranch(int projectId, BranchConfig branch)
+    public async Task<Result<BranchWatcherConfig>> AddBranch(int projectId, BranchConfig branch)
     {
         var project = await projectsRepository.Get(projectId);
 
         if (project == null)
-            return false;
+            return ProjectErrors.ProjectNotFound();
 
         if (project.BranchConfigs.Any(x => x.BranchName == branch.BranchName))
-            return false;
+            return BranchErrors.BranchNotFound();
 
-        project.BranchConfigs.Add(new()
+        var branchEntity = new BranchWatcherConfig()
         {
             BranchName = branch.BranchName,
             VersionType = branch.VersionType,
-        });
+        };
+        project.BranchConfigs.Add(branchEntity);
 
         await projectsRepository.SaveAsync();
 
-        await UpdateBranches(project);
+        await projectWatcherService.SyncBranchesAsync(project);
 
-        return true;
+        return branchEntity;
     }
 
-    public async Task<bool> RemoveBranch(int projectId, string branchName)
+
+    public async Task<Result<bool>> RemoveBranch(int projectId, string branchName)
     {
         var project = await projectsRepository.Get(projectId);
 
         if (project == null)
-            return false;
+            return ProjectErrors.ProjectNotFound();
 
         int cnt = project.BranchConfigs.RemoveAll(x=>x.BranchName.Equals(branchName));
 
@@ -50,31 +46,31 @@ public class ProjectService(IProjectsRepository projectsRepository, IProjectWatc
         {
             await projectsRepository.SaveAsync();
 
-            await UpdateBranches(project);
+            await projectWatcherService.SyncBranchesAsync(project);     
         }
 
 
         return true;
     }
 
-    public async Task<bool> UpdateBranch(int projectId, string branchName, BranchConfig newValue)
+    public async Task<Result> UpdateBranch(int projectId, string branchName, BranchConfig newValue)
     {
         var project = await projectsRepository.Get(projectId);
 
         if (project == null)
-            return false;
+            return ProjectErrors.ProjectNotFound();
 
         var branch = project.BranchConfigs.FirstOrDefault(x=>x.BranchName == branchName);
         if (branch == null)
-            return false;
+            return BranchErrors.BranchNotFound();
 
         branch.BranchName = newValue.BranchName;
         branch.VersionType = newValue.VersionType;
 
         await projectsRepository.SaveAsync();
 
-        await UpdateBranches(project);
+        await projectWatcherService.SyncBranchesAsync(project);
 
-        return true;
+        return Result.Success();
     }
 }

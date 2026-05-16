@@ -48,7 +48,8 @@ public static class DependencyInjection
 
         IServiceCollection AddServices()
         {
-            services.AddScoped<ProjectService>();
+            services.AddScoped<ProjectWatcherService>();
+            services.AddScoped<BranchManagementService>();
 
             return services;
         }

@@ -20,7 +20,7 @@ internal class DeleteProject(IProjectsRepository repository, IProjectWatcherMana
         catch (Exception ex)
         {
             logger.LogError(ex, "DeleteProject error");
-            return ProjectErrors.ProjectNotFounded().AsResult();
+            return ProjectErrors.ProjectNotFound().AsResult();
         }
 
         return Result.Success();
