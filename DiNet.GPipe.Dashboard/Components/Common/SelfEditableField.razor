@@ -1,0 +1,62 @@
+﻿@typeparam TValue
+@using System.ComponentModel.DataAnnotations
+
+<div class="editable-field">
+    @if (_isEditing)
+    {
+        <EditForm Model="_editModel" OnValidSubmit="HandleSaveAsync">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <EditableField TValue="TValue" IsEditing="true" Value="_editModel.Value" EditModel="_editModel"
+                           InputTemplate="@InputTemplate" DisplayTemplate="@DisplayTemplate" />
+
+            <div class="editable-field__actions">
+                <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                <button type="button" class="btn btn-sm btn-secondary" @onclick="CancelEdit">Cancel</button>
+            </div>
+        </EditForm>
+    }
+    else
+    {
+        <div @onclick="EnterEditMode">
+            <EditableField TValue="TValue" IsEditing="false" Value="Value" DisplayTemplate="@DisplayTemplate" />
+        </div>
+    }
+</div>
+
+@code {
+    private bool _isEditing;
+
+    [Parameter] public TValue Value { get; set; } = default!;
+
+    private EditableField<TValue>.InternalEditModel _editModel = new();
+
+    [Parameter] public EventCallback<TValue> ValueChanged { get; set; }
+    [Parameter] public EventCallback<TValue> OnSave { get; set; }
+    [Parameter] public RenderFragment<TValue>? DisplayTemplate { get; set; }
+    [Parameter] public RenderFragment<EditableField<TValue>.InternalEditModel>? InputTemplate { get; set; }
+    protected override void OnParametersSet()
+    {
+        if (!_isEditing)
+        {
+            _editModel = new EditableField<TValue>.InternalEditModel { Value = Value };
+        }
+    }
+
+    private void EnterEditMode() => _isEditing = true;
+
+    private void CancelEdit()
+    {
+        _isEditing = false;
+        _editModel.Value = Value;
+    }
+
+    private async Task HandleSaveAsync()
+    {
+        var newValue = _editModel.Value;
+        await ValueChanged.InvokeAsync(newValue);
+        await OnSave.InvokeAsync(newValue);
+        _isEditing = false;
+    }
+}

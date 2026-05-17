@@ -15,9 +15,7 @@
         <div class="mb-3">
             <label class="form-label fw-semibold">Project Name</label>
             <input type="text" class="form-control @(IsInvalid(nameof(Project.Name)) ? "is-invalid" : "")"
-                   @bind="Project.Name"
-                   @bind:event="oninput"
-                   placeholder="Enter project name" />
+                   @bind="Project.Name" @bind:event="oninput" placeholder="Enter project name" />
             @if (GetError(nameof(Project.Name)) is string nameError)
             {
                 <div class="invalid-feedback">@nameError</div>
@@ -28,11 +26,13 @@
         <div class="mb-3">
             <label class="form-label fw-semibold">Repository Source</label>
             <div class="btn-group w-100" role="group">
-                <button type="button" class="btn btn-outline-secondary @(repoSourceType == RepoSourceType.GitUrl ? "active" : "")"
+                <button type="button"
+                        class="btn btn-outline-secondary @(repoSourceType == RepoSourceType.GitUrl ? "active" : "")"
                         @onclick="() => SetRepoSource(RepoSourceType.GitUrl)">
                     Git URL
                 </button>
-                <button type="button" class="btn btn-outline-secondary @(repoSourceType == RepoSourceType.LocalPath ? "active" : "")"
+                <button type="button"
+                        class="btn btn-outline-secondary @(repoSourceType == RepoSourceType.LocalPath ? "active" : "")"
                         @onclick="() => SetRepoSource(RepoSourceType.LocalPath)">
                     Local folder
                 </button>
@@ -45,8 +45,7 @@
             {
                 <label class="form-label fw-semibold">Git URL</label>
                 <input type="text" class="form-control @(IsInvalid(nameof(Project.GitUrl)) ? "is-invalid" : "")"
-                       @bind="Project.GitUrl" @bind:event="oninput"
-                       placeholder="https://github.com/user/repo.git" />
+                       @bind="Project.GitUrl" @bind:event="oninput" placeholder="https://github.com/user/repo.git" />
                 @if (GetError(nameof(Project.GitUrl)) is string urlError)
                 {
                     <div class="invalid-feedback">@urlError</div>
@@ -55,9 +54,8 @@
             else
             {
                 <label class="form-label fw-semibold">Local folder path</label>
-                <input type="text" class="form-control @(IsInvalid("LocalPath") ? "is-invalid" : "")"
-                       @bind="localPath" @bind:event="oninput"
-                       placeholder="C:\repos\my-project or /home/user/project" />
+                <input type="text" class="form-control @(IsInvalid("LocalPath") ? "is-invalid" : "")" @bind="localPath"
+                       @bind:event="oninput" placeholder="C:\repos\my-project or /home/user/project" />
                 <small class="text-muted">Absolute path to the local Git repository folder</small>
                 @if (GetError("LocalPath") is string pathError)
                 {
@@ -94,7 +92,7 @@
                     var branch = Project.BranchConfigs[i];
                     var index = i;
                     <div class="d-flex align-items-center gap-2 mb-2 p-2 rounded-2 bg-light border shadow-sm">
-                        <BranchEditView branch=branch/>
+                        <BranchEditView branch=branch />
 
                         <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => RemoveBranch(index)">
                             <i class="bi bi-trash"></i>
@@ -180,7 +178,7 @@
     private void AddBranch()
     {
         var target = Enum.GetValues<BranchVersion>()
-            .Where(x => !Project.BranchConfigs.Exists(e=>e.VersionType==x))
+            .Where(x => !Project.BranchConfigs.Exists(e => e.VersionType == x))
             .FirstOrDefault(BranchVersion.Alpha);
 
         Project.BranchConfigs.Add(new BranchForm() { VersionType = target });
@@ -242,7 +240,7 @@
                     RemoveError(fieldName);
                 break;
 
-                      case nameof(Project.GitUrl):
+            case nameof(Project.GitUrl):
                 if (repoSourceType == RepoSourceType.GitUrl)
                 {
                     if (string.IsNullOrWhiteSpace(Project.GitUrl))

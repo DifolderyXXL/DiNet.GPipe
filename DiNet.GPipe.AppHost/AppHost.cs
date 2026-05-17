@@ -5,7 +5,6 @@ var api = builder.AddProject<Projects.DiNet_GPipe_WebApi>("dinet-gpipe-webapi")
 
 builder.AddProject<Projects.DiNet_GPipe_Dashboard>("dinet-gpipe-dashboard")
     .WithHttpHealthCheck("/health")
-    .WaitFor(api)
     .WithReference(api);
 
 builder.Build().Run();

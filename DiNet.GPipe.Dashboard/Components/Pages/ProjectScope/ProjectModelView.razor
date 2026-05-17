@@ -1,5 +1,6 @@
 ﻿@using DiNet.GPipe.Application.Handlers.Projects.Get
 @using DiNet.GPipe.Dashboard.Api
+@using DiNet.GPipe.Dashboard.Components.Common
 @using DiNet.GPipe.Dashboard.Components.Pages.ProjectScope.Branch
 @using DiNet.GPipe.Dashboard.Models
 @using DiNet.GPipe.Dashboard.Models.Forms
@@ -9,7 +10,17 @@
 {
     <div class="card shadow-sm">
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <SelfEditableField @bind-Value=Project.Name>
+                <InputTemplate Context="model">
+                    <InputText @bind-Value=model.Value class="form-control" />
+                </InputTemplate>
+                <DisplayTemplate Context="value">
+                    @value.ToString()
+                </DisplayTemplate>
+            </SelfEditableField>
+
             <h4 class="mb-0">@Project.Name</h4>
+
             <button type="button" class="btn btn-sm btn-outline-danger" @onclick=RemoveRequest>
                 <i class="bi bi-trash"></i>
             </button>
@@ -31,15 +42,14 @@
                     @foreach (var branch in Project.Branches)
                     {
                         var targetBranch = branch;
-                        <BranchEditableView branch=branch OnEdited=@((x) => BranchEdited(targetBranch.Name, x)) OnRemove=BranchRemoveRequest />
+                        <BranchEditableView branch=branch OnEdited=@((x) => BranchEdited(targetBranch.Name, x))
+                                            OnRemove=BranchRemoveRequest />
                     }
 
                     @if (!_isAddingNewBranch)
                     {
-                        
-                        <button type="button"
-                                class="btn btn-sm btn-outline-primary mt-2"
-                                @onclick=StartAddingNewBranch>
+
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" @onclick=StartAddingNewBranch>
                             <i class="bi bi-plus-circle me-1"></i> Add Branch
                         </button>
                     }
@@ -60,10 +70,10 @@
 
                 </div>
             </div>
-            
-            @if(Project.IsActive)
+
+            @if (Project.IsActive)
             {
-                <button type="button" class="btn btn-sm btn-outline-success" @onclick="()=>ChangeActiveProject(false)">
+                <button type="button" class="btn btn-sm btn-outline-success" @onclick="() => ChangeActiveProject(false)">
                     <i class="bi bi-check"></i> Active
                 </button>
             }
@@ -117,7 +127,7 @@
         _branchForm = null;
         _isAddingNewBranch = false;
 
-        StateHasChanged(); 
+        StateHasChanged();
     }
 
     public async Task BranchEdited(string targetName, BranchDto branch)
@@ -125,7 +135,7 @@
         if (Project == null)
             return;
 
-        var index = Project.Branches.FindIndex(x=>x.Name==targetName);
+        var index = Project.Branches.FindIndex(x => x.Name == targetName);
         Project.Branches[index] = branch;
 
         await Api.UpdateBranch(Project.Id, targetName, new(branch.Name, branch.version), default);

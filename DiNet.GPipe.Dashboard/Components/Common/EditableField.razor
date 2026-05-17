@@ -1,0 +1,42 @@
+﻿@using System.ComponentModel.DataAnnotations
+@typeparam TValue
+
+@if (IsEditing)
+{
+    @if (InputTemplate != null)
+    {
+        @InputTemplate(EditModel)
+    }
+    else
+    {
+        <p>INPUT TEMPLATE NULL</p>
+    }
+}
+else
+{
+    <div class="editable-field__display">
+        @if (DisplayTemplate != null)
+        {
+            @DisplayTemplate(Value)
+        }
+        else
+        {
+            <span>@Value?.ToString()</span>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public TValue Value { get; set; } = default!;
+    [Parameter] public bool IsEditing { get; set; }
+
+    [Parameter] public InternalEditModel? EditModel { get; set; }
+    [Parameter] public RenderFragment<TValue>? DisplayTemplate { get; set; }
+    [Parameter] public RenderFragment<InternalEditModel>? InputTemplate { get; set; }
+
+    public class InternalEditModel
+    {
+        [Required(ErrorMessage = "Value is required.")]
+        public TValue Value { get; set; } = default!;
+    }
+}
