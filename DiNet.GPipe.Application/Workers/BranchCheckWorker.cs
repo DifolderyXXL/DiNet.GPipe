@@ -16,7 +16,7 @@ public class BranchData
 }
 
 
-public class BranchCheckWorker (WatcherParameters parameters,
+public class BranchCheckWorker(WatcherParameters parameters,
                                IVersionService versionService,
                                ICommitSource commitSource,
                                IDataRepository<BranchData> branchRepository,
@@ -39,7 +39,7 @@ public class BranchCheckWorker (WatcherParameters parameters,
             {
                 await CheckForNewCommits(ct);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 logger.LogError(e, "Error while checking commits for {Project}", parameters.Project.Name);
             }
@@ -56,16 +56,16 @@ public class BranchCheckWorker (WatcherParameters parameters,
             state.LastSeenHashes.TryGetValue(branch.BranchName, out var lastHash);
 
             var delta = commitSource.GetCommitsSince(branch.BranchName, lastHash);
-            allNewCommits.AddRange(delta.Select(x=>(x, branch)));
+            allNewCommits.AddRange(delta.Select(x => (x, branch)));
         }
 
         var orderedCommits = allNewCommits
-            .GroupBy(c=>c.commit.Hash)
+            .GroupBy(c => c.commit.Hash)
             .Select(g => g.First())
             .OrderByDescending(c => c.branch.VersionType)
             .ThenBy(c => c.commit.Date);
 
-        foreach(var commit in orderedCommits)
+        foreach (var commit in orderedCommits)
         {
             if (await buildRegistry.Contains(commit.commit.Hash)) continue;
 
@@ -82,7 +82,8 @@ public class BranchCheckWorker (WatcherParameters parameters,
                Guid.NewGuid()
                );
 
-            var registry = new BuildRegistry {
+            var registry = new BuildRegistry
+            {
                 CommitHash = commit.commit.Hash,
                 CommitDate = commit.commit.Date,
                 ProjectId = parameters.Project.Id,
@@ -91,7 +92,7 @@ public class BranchCheckWorker (WatcherParameters parameters,
             };
             await buildRegistry.Add(registry);
 
-            await eventBus.PublisthAsync(command, ct);
+            await eventBus.PublishAsync(command, ct);
 
             logger.LogInformation("Event published: {Commit} for {Type}", commit.commit.Hash, commit.branch.VersionType);
 

@@ -10,7 +10,7 @@
 {
     <div class="card shadow-sm">
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <SelfEditableField @bind-Value=Project.Name>
+            <SelfEditableField TValue="string" @bind-Value=Project.Name OnSave="SaveProjectName">
                 <InputTemplate Context="model">
                     <InputText @bind-Value=model.Value class="form-control" />
                 </InputTemplate>
@@ -26,11 +26,24 @@
             </button>
         </div>
         <div class="card-body">
-            <div class="mb-3">
-                <label class="text-muted small d-block">Git URL</label>
+            <SelfEditableField TValue="string" @bind-Value=Project.GitUrl OnSave="SaveGitUrl">
+                <InputTemplate Context="model">
+                    <label class="text-muted small d-block">Git URL</label>
 
-                <a href="@Project.GitUrl" target="_blank">@Project.GitUrl</a>
-            </div>
+                    <InputText @bind-Value=model.Value class="form-control" />
+                </InputTemplate>
+                <DisplayTemplate Context="value">
+
+                    <div class="mb-3">
+                        <label class="text-muted small d-block">Git URL</label>
+
+                        <a href="@value" target="_blank">@value</a>
+                    </div>
+
+                </DisplayTemplate>
+            </SelfEditableField>
+
+            
             <div class="mb-3">
                 <label class="text-muted small d-block">Poll Interval</label>
                 <span class="badge bg-secondary">@Project.PollInterval hh:mm:ss</span>
@@ -41,8 +54,12 @@
 
                     @foreach (var branch in Project.Branches)
                     {
-                        var targetBranch = branch;
-                        <BranchEditableView branch=branch OnEdited=@((x) => BranchEdited(targetBranch.Name, x))
+                        var targetBranch = new BranchForm()
+                        {
+                            BranchName = branch.Name,
+                            VersionType = branch.version
+                        };
+                        <BranchEditableView branch=targetBranch OnEdited=@((x) => BranchEdited(targetBranch.BranchName, x))
                                             OnRemove=BranchRemoveRequest />
                     }
 
@@ -92,12 +109,21 @@
     [Inject] protected IWebApi Api { get; set; }
 
     [Parameter]
-    public Func<Task> RemoveRequested { get; set; }
+    public EventCallback RemoveRequested { get; set; }
 
     [Parameter]
-    public ProjectState? Project { get; set; }
+    public ProjectState Project { get; set; }
 
     private BranchForm? _branchForm;
+
+    private async Task SaveProjectName(string name)
+    {
+
+    }
+    private async Task SaveGitUrl(string name)
+    {
+
+    }
 
     public bool _isAddingNewBranch = false;
     public void StartAddingNewBranch()
@@ -121,11 +147,12 @@
             return;
 
         var branch = new BranchConfig(_branchForm.BranchName, _branchForm.VersionType);
-        Project.Branches.Add(new(branch.BranchName, branch.VersionType));
-        await Api.AddBranch(Project.Id, branch, default);
 
         _branchForm = null;
         _isAddingNewBranch = false;
+
+        await Api.AddBranch(Project.Id, branch, default);
+        Project.Branches.Add(new(branch.BranchName, branch.VersionType));
 
         StateHasChanged();
     }
@@ -149,6 +176,7 @@
             return;
 
         await Api.RemoveBranch(Project.Id, branch.Name, default);
+        Project.Branches.RemoveAll(x => x.Name == branch.Name);
 
         StateHasChanged();
     }
@@ -156,20 +184,7 @@
 
     public async Task RemoveRequest()
     {
-        var task = RemoveRequested?.Invoke();
-
-        if (task != null)
-            await task;
-    }
-
-    public async Task RemoveBranch(string branchName)
-    {
-        if (Project == null)
-            return;
-
-        await Api.RemoveBranch(Project.Id, branchName, default);
-
-        StateHasChanged();
+        await RemoveRequested.InvokeAsync();
     }
 
     public async Task ChangeActiveProject(bool active)

@@ -10,14 +10,14 @@ public class TestRunBuild : IEndpoint
     {
         app.MapPost("test/build", async (IEventBus bus, CancellationToken ct) =>
         {
-            await bus.PublisthAsync(new BuildCommand(
-                "rctschedule", 
-                "feature/architecture", 
+            await bus.PublishAsync(new BuildCommand(
+                "rctschedule",
+                "feature/architecture",
                 @"https://github.com/DifolderyXXL/DiNet.RctSchedule.Widget",
 
                 "22b53fb6f7fa397644f4df20cd357380d557888f",
                 new BuildVersion(1, 1, 1),
-                
+
                 Guid.NewGuid()), ct);
         });
     }

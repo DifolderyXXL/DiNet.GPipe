@@ -1,50 +1,54 @@
 ﻿@using DiNet.GPipe.Application.Handlers.Projects.Get
+@using DiNet.GPipe.Dashboard.Components.Common
 @using DiNet.GPipe.Dashboard.Models.Forms
 
-<div class="d-flex align-items-center mb-1 py-1 px-2 rounded-2 bg-light border shadow-sm" style="font-size: 0.85rem;">            
-    @if (!_isEditing)
-    {   
-        <BranchModelView branch=branch />
+<div class="d-flex align-items-center mb-1 py-1 px-2 rounded-2 bg-light border shadow-sm" style="font-size: 0.85rem;">
+    <EditableField TValue="BranchForm" Value=branch EditModel="_editModel" IsEditing="_isEditing">
+        <InputTemplate Context="model">
+            <BranchEditView branch=model.Value />
 
-        <button type="button" class="btn btn-sm btn-outline-success" @onclick=StartEditing>
-            <i class="bi bi-pen"></i>
-        </button>
-    }
-    else
-    {
-        <BranchEditView branch=_branchForm/>
+            <button type="button" class="btn btn-sm btn-outline-warning" @onclick=StopEditing>
+                <i class="bi bi-pen"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-danger" @onclick=RemoveBranch>
+                <i class="bi bi-trash"></i>
+            </button>
+        </InputTemplate>
+        <DisplayTemplate Context="value">
+            <BranchModelView branch=@(new BranchDto(value.BranchName, value.VersionType)) />
 
-        <button type="button" class="btn btn-sm btn-outline-warning" @onclick=StopEditing>
-            <i class="bi bi-pen"></i>
-        </button>
-    }
-
-    
-    <button type="button" class="btn btn-sm btn-outline-danger" @onclick=RemoveBranch>
-        <i class="bi bi-trash"></i>
-    </button>
+            <button type="button" class="btn btn-sm btn-outline-success" @onclick=StartEditing>
+                <i class="bi bi-pen"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-danger" @onclick=RemoveBranch>
+                <i class="bi bi-trash"></i>
+            </button>
+        </DisplayTemplate>
+    </EditableField>
 </div>
 
 @code {
     [Parameter]
-    public BranchDto branch { get; set; } = null!;
+    public BranchForm branch { get; set; } = null!;
 
     [Parameter]
-    public Func<BranchDto, Task>? OnEdited { get; set; }
+    public EventCallback<BranchDto> OnEdited { get; set; }
 
     [Parameter]
-    public Func<BranchDto, Task>? OnRemove { get; set; }
+    public EventCallback<BranchDto> OnRemove { get; set; }
 
     private bool _isEditing = false;
+    private EditableField<BranchForm>.InternalEditModel _editModel = new();
 
-    private BranchForm _branchForm = new();
 
     public void StartEditing()
     {
         _isEditing = true;
-        _branchForm.BranchName = branch.Name;
-        _branchForm.VersionType = branch.version;
-
+        _editModel.Value = new BranchForm
+        {
+            BranchName = branch.BranchName,
+            VersionType = branch.VersionType
+        };
         StateHasChanged();
     }
 
@@ -52,15 +56,16 @@
     {
         _isEditing = false;
 
-        var task = OnEdited?.Invoke(new BranchDto(_branchForm.BranchName, _branchForm.VersionType));
-        if (task != null)
-            await task;
+        branch = _editModel.Value;
+        await OnEdited.InvokeAsync(new BranchDto(branch.BranchName, branch.VersionType));
+
+        StateHasChanged();
     }
 
     public async Task RemoveBranch()
     {
-        var task = OnRemove?.Invoke(branch);
-        if (task != null)
-            await task;
+        await OnRemove.InvokeAsync(new BranchDto(branch.BranchName, branch.VersionType));
+
+        StateHasChanged();
     }
 }

@@ -6,11 +6,11 @@ namespace DiNet.GPipe.Infrastructure.Messaging;
 
 public class EventBus(IServiceProvider services, ILogger<EventBus> logger) : IEventBus
 {
-    public async Task PublisthAsync<T>(T @event, CancellationToken ct) where T : class
+    public async Task PublishAsync<T>(T @event, CancellationToken ct) where T : class
     {
         var handlers = services.GetServices<IAsyncEventHandler<T>>().ToList();
-            
-        if(handlers.Count == 0)
+
+        if (handlers.Count == 0)
         {
             logger.LogWarning("No handlers registered for event {Type}", typeof(T).Name);
 

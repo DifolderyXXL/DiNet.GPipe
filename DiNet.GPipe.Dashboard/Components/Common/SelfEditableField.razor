@@ -13,13 +13,13 @@
 
             <div class="editable-field__actions">
                 <button type="submit" class="btn btn-sm btn-primary">Save</button>
-                <button type="button" class="btn btn-sm btn-secondary" @onclick="CancelEdit">Cancel</button>
+                <button type="button" class="btn btn-sm btn-secondary" @onclick=CancelEdit>Cancel</button>
             </div>
         </EditForm>
     }
     else
     {
-        <div @onclick="EnterEditMode">
+        <div @onclick=EnterEditMode>
             <EditableField TValue="TValue" IsEditing="false" Value="Value" DisplayTemplate="@DisplayTemplate" />
         </div>
     }

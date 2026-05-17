@@ -46,14 +46,14 @@ public class BuildCommandHandler(IBuildRegistryRepository buildRepository,
 
             await buildRepository.UpdateStatus(command.CommitHash, BuildStatus.Success);
 
-            await eventBus.PublisthAsync(
+            await eventBus.PublishAsync(
                 new ApkBuildSuccessful(
-                    apk.FilePath, 
+                    apk.FilePath,
                     command.ProjectName,
                     command.BranchName,
                     command.CommitHash,
                     command.Version,
-                    command.CorrelationId), 
+                    command.CorrelationId),
                 ct);
         }
         catch (Exception ex)

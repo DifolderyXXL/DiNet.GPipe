@@ -14,16 +14,14 @@
 }
 else
 {
-    <div class="editable-field__display">
-        @if (DisplayTemplate != null)
-        {
-            @DisplayTemplate(Value)
-        }
-        else
-        {
-            <span>@Value?.ToString()</span>
-        }
-    </div>
+    @if (DisplayTemplate != null)
+    {
+        @DisplayTemplate(Value)
+    }
+    else
+    {
+        <span>@Value?.ToString()</span>
+    }
 }
 
 @code {
