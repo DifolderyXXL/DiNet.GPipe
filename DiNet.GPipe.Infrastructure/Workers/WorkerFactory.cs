@@ -11,18 +11,20 @@ namespace DiNet.GPipe.Infrastructure.Workers;
 
 public class WorkerFactory(IServiceScopeFactory scopeFactory) : IWorkerFactory
 {
-    public WatcherEntry Create(ProjectModel project, WatcherParameters request)
+    public WatcherEntry Create(WatcherParameters request)
     {
         var cts = new CancellationTokenSource();
 
         var scope = scopeFactory.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<IProjectScopeContext>();
-        context.Initialize(project.Id, request.Project.Name, request.Project.GitUrl);
+        context.Initialize(request.ProjectId, request.Config.ProjectName, request.Config.GitUrl);
 
-        
         var workerInstance = ActivatorUtilities.CreateInstance<BranchCheckWorker>(scope.ServiceProvider, request);
 
-        var watcher = new Watcher(project.Id, request.Project.Name, request.Project.GitUrl, request.Branches, WatcherStatus.Created);
+        var watcher = new Watcher(
+            request.ProjectId,
+            request.Config,
+            WatcherStatus.Created);
 
         var entry = new WatcherEntry(cts, watcher, scope, workerInstance);
 

@@ -1,14 +1,15 @@
-﻿using DiNet.GPipe.SharedKernel.Models;
+﻿using System.Collections.Immutable;
+using DiNet.GPipe.SharedKernel.Models;
 
 namespace DiNet.GPipe.SharedKernel.Watchers;
 
 public interface IProjectWatcherManager
 {
-    public Task<int> CreateWatcherAsync(WatcherParameters request, CancellationToken ct);
+    public Task<int> CreateOrUpdateWatcherAsync(WatcherParameters request, CancellationToken ct);
     public Task DeleteWatcherAsync(int id, CancellationToken ct);
     public Task<Watcher?> GetWatcherAsync(int id, CancellationToken ct);
     public IEnumerable<Watcher> EnumerateAllWatchers();
-    public Task UpdateIntervalAsync(string branchName, CancellationToken ct);
+    public Task UpdateIntervalAsync(int id, TimeSpan interval, CancellationToken ct);
     public Task UpdateBranches(int id, List<BranchConfig> branches, CancellationToken ct);
 }
 
@@ -27,16 +28,12 @@ public enum WatcherStatus
 }
 
 public record Watcher(
-    int ProjectId, 
-    string ProjectName,
-    string GitUrl,
-    List<BranchConfig> Branches,
+    int ProjectId,
+    ProjectWatcherConfig Config,
     WatcherStatus Status
-    );
+);
+
 public record WatcherRequest(
-    string ProjectName,
-    string GitUrl,
-    bool FastStart,
-    List<BranchConfig> Branches, 
-    TimeSpan PollInterval
-    );
+    ProjectWatcherConfig Config,
+    bool FastStart
+);

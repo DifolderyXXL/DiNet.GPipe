@@ -36,11 +36,19 @@
     [Parameter] public EventCallback<TValue> OnSave { get; set; }
     [Parameter] public RenderFragment<TValue>? DisplayTemplate { get; set; }
     [Parameter] public RenderFragment<EditableField<TValue>.InternalEditModel>? InputTemplate { get; set; }
+
+    private TValue? _previousValue;
     protected override void OnParametersSet()
     {
-        if (!_isEditing)
+        if (!EqualityComparer<TValue>.Default.Equals(Value, _previousValue))
         {
+            _isEditing = false;
             _editModel = new EditableField<TValue>.InternalEditModel { Value = Value };
+            _previousValue = Value;
+        }
+        else if (!_isEditing)
+        {
+            _editModel.Value = Value;
         }
     }
 

@@ -4,19 +4,29 @@ using System.Collections.Concurrent;
 using DiNet.GPipe.Application.Workers;
 
 namespace DiNet.GPipe.Infrastructure.Workers;
+
 public class ProjectWatcherManager(IWorkerFactory workerFactory) : IProjectWatcherManager
 {
     private readonly ConcurrentDictionary<int, WatcherEntry> _watchers = [];
 
-    public async Task<int> CreateWatcherAsync(WatcherParameters request, CancellationToken ct)
+    public async Task<int> CreateOrUpdateWatcherAsync(WatcherParameters request, CancellationToken ct)
     {
-        var entry = workerFactory.Create(request.Project, request);
+        if (_watchers.TryGetValue(request.ProjectId, out var entry))
+        {
+            await entry.CancellationTokenSource.CancelAsync();
+            entry.Scope.Dispose();
+        }
 
-        _watchers.TryAdd(entry.Watcher.ProjectId, entry);
+        var newEntry = workerFactory.Create(request);
 
-        entry.Instance.Start(entry.CancellationTokenSource.Token);
+        if (entry != null)
+            _watchers.TryUpdate(newEntry.Watcher.ProjectId, newEntry, entry);
+        else
+            _watchers.TryAdd(newEntry.Watcher.ProjectId, newEntry);
 
-        return entry.Watcher.ProjectId;
+        newEntry.Instance.Start(newEntry.CancellationTokenSource.Token);
+
+        return newEntry.Watcher.ProjectId;
     }
 
     public async Task DeleteWatcherAsync(int id, CancellationToken ct)
@@ -42,17 +52,29 @@ public class ProjectWatcherManager(IWorkerFactory workerFactory) : IProjectWatch
         return null;
     }
 
-    public async Task UpdateBranches(int id, List<BranchConfig> branches, CancellationToken ct)
+    public async Task UpdateBranches(
+        int id, List<BranchConfig> branches, CancellationToken ct)
     {
-        if(_watchers.TryGetValue(id, out var entry))
-        {
-            entry.Watcher.Branches.Clear();
-            entry.Watcher.Branches.AddRange(branches);
-        }
+        if (!_watchers.TryGetValue(id, out var entry))
+            throw new InvalidOperationException("Watcher not found");
+
+        var newParams = new WatcherParameters(
+            entry.Watcher.ProjectId,
+            entry.Watcher.Config with { Branches = branches }
+        );
+
+        await CreateOrUpdateWatcherAsync(newParams, ct);
     }
 
-    public async Task UpdateIntervalAsync(string branchName, CancellationToken ct)
+    public async Task UpdateIntervalAsync(int id, TimeSpan interval, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        if (!_watchers.TryGetValue(id, out var entry))
+            throw new InvalidOperationException("Watcher not found");
+
+        var newParams = new WatcherParameters(
+            entry.Watcher.ProjectId,
+            entry.Watcher.Config with { PollInterval = interval }
+        );
+        await CreateOrUpdateWatcherAsync(newParams, ct);
     }
 }

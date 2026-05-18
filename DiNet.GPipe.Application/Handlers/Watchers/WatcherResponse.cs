@@ -6,6 +6,6 @@ public sealed record WatcherResponse(
     int ProjectId,
     string ProjectName,
     string GitUrl,
-    List<BranchConfig> Branches,
+    IReadOnlyList<BranchConfig> Branches,
     WatcherStatus Status
     );

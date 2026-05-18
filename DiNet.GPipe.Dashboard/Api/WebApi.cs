@@ -25,6 +25,16 @@ public class MockWebApi : IWebApi
         throw new NotImplementedException();
     }
 
+    public Task<HttpStatusCode> UpdateProjectName(int projectId, string newName, CancellationToken ct)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<HttpStatusCode> UpdateProjectGitUrl(int projectId, string newGitUrl, CancellationToken ct)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<CommitResponse[]> GetProjectCommits(int projectId, bool includeActivity, CancellationToken ct)
     {
         CommitResponse[] commits = [new() { Name = "c1", BuildVersion = new(1, 2, 3), Hash = "asd123" }, new() { Name = "c3", BuildVersion = new(1, 2, 3), Hash = "asd123" }];
@@ -96,6 +106,18 @@ public class WebApi(HttpClient client) : IWebApi
     public async Task UpdateBranch(int projectId, string branchName, BranchConfig branch, CancellationToken ct)
     {
         await client.PostAsJsonAsync($"/project/{projectId}/branch/{branchName}/update", branch, ct);
+    }
+
+    public async Task<HttpStatusCode> UpdateProjectName(int projectId, string newName, CancellationToken ct)
+    {
+        var response = await client.PutAsJsonAsync($"/project/{projectId}/name", new { NewName = newName }, ct);
+        return response.StatusCode;
+    }
+
+    public async Task<HttpStatusCode> UpdateProjectGitUrl(int projectId, string newGitUrl, CancellationToken ct)
+    {
+        var response = await client.PutAsJsonAsync($"/project/{projectId}/giturl", new { NewGitUrl = newGitUrl }, ct);
+        return response.StatusCode;
     }
 
     public async Task WatcherChangeActive(int projectId, bool active, CancellationToken ct)

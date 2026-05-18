@@ -6,5 +6,5 @@ namespace DiNet.GPipe.Application.Workers;
 
 public interface IWorkerFactory
 {
-    public WatcherEntry Create(ProjectModel project, WatcherParameters request);
+    public WatcherEntry Create(WatcherParameters request);
 }

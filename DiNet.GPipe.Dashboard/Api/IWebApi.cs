@@ -13,6 +13,8 @@ public interface IWebApi
     Task AddBranch(int projectId, BranchConfig branch, CancellationToken ct);
     Task<HttpStatusCode> CreateProject(CreateWatcherCommand command, CancellationToken ct);
     Task DeleteProject(int projectId, CancellationToken ct);
+    Task<HttpStatusCode> UpdateProjectName(int projectId, string newName, CancellationToken ct);
+    Task<HttpStatusCode> UpdateProjectGitUrl(int projectId, string newGitUrl, CancellationToken ct);
     Task<CommitResponse[]> GetProjectCommits(int projectId, bool includeActivity, CancellationToken ct);
     Task<ProjectResponse[]> GetProjects(CancellationToken ct);
     Task<WatcherResponse?> GetProjectWatcher(int projectId, CancellationToken ct);

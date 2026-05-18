@@ -116,13 +116,25 @@
 
     private BranchForm? _branchForm;
 
+    private ProjectState? _previousProject;
+
+    protected override void OnParametersSet()
+    {
+        if (Project != _previousProject)
+        {
+            _isAddingNewBranch = false;
+            _branchForm = null;
+            _previousProject = Project;
+        }
+    }
+
     private async Task SaveProjectName(string name)
     {
-
+        await Api.UpdateProjectName(Project.Id, name, default);
     }
     private async Task SaveGitUrl(string name)
     {
-
+        await Api.UpdateProjectGitUrl(Project.Id, name, default);
     }
 
     public bool _isAddingNewBranch = false;

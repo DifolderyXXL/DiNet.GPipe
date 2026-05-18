@@ -31,7 +31,7 @@ public class BranchCheckWorker(WatcherParameters parameters,
 
     public async Task ExecuteAsync(CancellationToken ct)
     {
-        var timer = new PeriodicTimer(parameters.Period);
+        var timer = new PeriodicTimer(parameters.Config.PollInterval);
 
         while (await timer.WaitForNextTickAsync(ct))
         {
@@ -41,7 +41,7 @@ public class BranchCheckWorker(WatcherParameters parameters,
             }
             catch (Exception e)
             {
-                logger.LogError(e, "Error while checking commits for {Project}", parameters.Project.Name);
+                logger.LogError(e, "Error while checking commits for {Project}", parameters.Config.ProjectName);
             }
         }
     }
@@ -51,7 +51,7 @@ public class BranchCheckWorker(WatcherParameters parameters,
         var state = branchRepository.Get() ?? new();
 
         var allNewCommits = new List<(CommitInfo commit, BranchConfig branch)>();
-        foreach (var branch in parameters.Branches)
+        foreach (var branch in parameters.Config.Branches)
         {
             state.LastSeenHashes.TryGetValue(branch.BranchName, out var lastHash);
 
@@ -86,7 +86,7 @@ public class BranchCheckWorker(WatcherParameters parameters,
             {
                 CommitHash = commit.commit.Hash,
                 CommitDate = commit.commit.Date,
-                ProjectId = parameters.Project.Id,
+                ProjectId = parameters.ProjectId,
                 Status = BuildStatus.Pending,
                 Version = version,
             };

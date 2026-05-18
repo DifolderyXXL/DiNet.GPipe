@@ -18,7 +18,7 @@ public class WatcherOrchestrator(
         var projects = await projectRepository.QueryAll();
         foreach (var project in projects)
         {
-            if(project.WatcherSettings.IsActive)
+            if (project.WatcherSettings.IsActive)
                 await StartProjectWatcherInternal(project, ct);
         }
     }
@@ -35,12 +35,16 @@ public class WatcherOrchestrator(
     private async Task<int> StartProjectWatcherInternal(ProjectModel project, CancellationToken ct)
     {
         var parameters = new WatcherParameters(
-            Project: project,
-            Branches: [.. project.BranchConfigs.Select(x=>new BranchConfig(x.BranchName, x.VersionType))],
-            Period: project.WatcherSettings.PollInterval
+            ProjectId: project.Id,
+            Config: new(
+                ProjectName: project.Name,
+                GitUrl: project.GitUrl,
+                Branches: [.. project.BranchConfigs.Select(x => new BranchConfig(x.BranchName, x.VersionType))],
+                PollInterval: project.WatcherSettings.PollInterval
+            )
         );
 
-        return await watcherManager.CreateWatcherAsync(parameters, ct);
+        return await watcherManager.CreateOrUpdateWatcherAsync(parameters, ct);
     }
 
     public async Task<Result> ChangeActiveAsync(int projectId, bool active, CancellationToken ct)

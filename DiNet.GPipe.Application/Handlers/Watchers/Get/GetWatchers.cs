@@ -13,7 +13,8 @@ internal class GetWatchers(IProjectWatcherManager manager) : IQueryHandler<GetWa
 
         return Result.Success(
             watchers.Select(
-                watcher => new WatcherResponse(watcher.ProjectId, watcher.ProjectName, watcher.GitUrl, watcher.Branches, watcher.Status))
+                watcher => new WatcherResponse(
+                    watcher.ProjectId, watcher.Config.ProjectName, watcher.Config.GitUrl, watcher.Config.Branches, watcher.Status))
             .ToList()
             );
 
