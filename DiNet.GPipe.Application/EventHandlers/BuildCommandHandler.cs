@@ -14,55 +14,55 @@ public record BuildCommand(
     string CommitHash,
     BuildVersion Version,
     Guid CorrelationId);
-public class BuildCommandHandler(IBuildRegistryRepository buildRepository,
-                          IApkProjectStorage storage,
-                          IEventBus eventBus,
-                          IIsolatedBuilder isolatedSpaceBuilder) : IAsyncEventHandler<BuildCommand>
-{
-    private readonly SemaphoreSlim _lock = new(1, 1);
+// public class BuildCommandHandler(IBuildRegistryRepository buildRepository,
+//                           IApkProjectStorage storage,
+//                           IEventBus eventBus,
+//                           IIsolatedBuilder isolatedSpaceBuilder) : IAsyncEventHandler<BuildCommand>
+// {
+//     private readonly SemaphoreSlim _lock = new(1, 1);
 
-    public async Task HandleAsync(BuildCommand command, CancellationToken ct)
-    {
-        await _lock.WaitAsync();
+//     public async Task HandleAsync(BuildCommand command, CancellationToken ct)
+//     {
+//         await _lock.WaitAsync();
 
-        try
-        {
-            await buildRepository.UpdateStatus(command.CommitHash, BuildStatus.Building);
+//         try
+//         {
+//             await buildRepository.UpdateStatus(command.CommitHash, BuildStatus.Building);
 
-            var result = await isolatedSpaceBuilder.BuildIsolated(
-                command.RepositoryUrl,
-                command.CommitHash,
-                SharedKernel.Models.BuildType.Release,
-                ct
-                );
+//             var result = await isolatedSpaceBuilder.BuildIsolated(
+//                 command.RepositoryUrl,
+//                 command.CommitHash,
+//                 SharedKernel.Models.BuildType.Release,
+//                 ct
+//                 );
 
-            if (result.IsError)
-            {
-                await buildRepository.CreateFailedRecord(null, command.CommitHash, result.Error!.ToString());
-                return;
-            }
+//             if (result.IsError)
+//             {
+//                 await buildRepository.CreateFailedRecord(null, command.CommitHash, result.Error!.ToString());
+//                 return;
+//             }
 
-            var apk = await storage.Store(result.Value!, command.ProjectName, command.CommitHash, ct);
+//             var apk = await storage.Store(result.Value!, command.ProjectName, command.CommitHash, ct);
 
-            await buildRepository.UpdateStatus(command.CommitHash, BuildStatus.Success);
+//             await buildRepository.UpdateStatus(command.CommitHash, BuildStatus.Success);
 
-            await eventBus.PublishAsync(
-                new ApkBuildSuccessful(
-                    apk.FilePath,
-                    command.ProjectName,
-                    command.BranchName,
-                    command.CommitHash,
-                    command.Version,
-                    command.CorrelationId),
-                ct);
-        }
-        catch (Exception ex)
-        {
-            await buildRepository.CreateFailedRecord(null, command.CommitHash, ex.Message);
-        }
-        finally
-        {
-            _lock.Release();
-        }
-    }
-}
+//             await eventBus.PublishAsync(
+//                 new ApkBuildSuccessful(
+//                     apk.FilePath,
+//                     command.ProjectName,
+//                     command.BranchName,
+//                     command.CommitHash,
+//                     command.Version,
+//                     command.CorrelationId),
+//                 ct);
+//         }
+//         catch (Exception ex)
+//         {
+//             await buildRepository.CreateFailedRecord(null, command.CommitHash, ex.Message);
+//         }
+//         finally
+//         {
+//             _lock.Release();
+//         }
+//     }
+// }

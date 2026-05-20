@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 namespace DiNet.GPipe.Infrastructure.Building;
 
 public class LocalBuildWorkspace(IOptions<DirectoryWorkspaceOptions> workspace, IGitRepositoryService gitRepository)
-    : IBuildWorkspace, IAsyncDisposable
+    : IBuildWorkspace, IAsyncDisposable, IDisposable
 {
     private Queue<string> _queuedPaths = new();
 
@@ -20,9 +20,20 @@ public class LocalBuildWorkspace(IOptions<DirectoryWorkspaceOptions> workspace, 
         }, ct);
     }
 
+    public void Dispose()
+    {
+        while (_queuedPaths.TryDequeue(out var path))
+        {
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path, true);
+            }
+        }
+    }
+
     public async ValueTask DisposeAsync()
     {
-        await Cleanup(default);
+        await Task.Run(() => Dispose());
     }
 
     public async Task<string> PrepareWorkspaceAsync(string repositoryUrl, string commitHash, CancellationToken cancellationToken)

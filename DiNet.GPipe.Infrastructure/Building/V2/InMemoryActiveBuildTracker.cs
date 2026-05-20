@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using DiNet.GPipe.SharedKernel.Interfaces.Logging;
 
 namespace DiNet.GPipe.Infrastructure.Building.V2;
 

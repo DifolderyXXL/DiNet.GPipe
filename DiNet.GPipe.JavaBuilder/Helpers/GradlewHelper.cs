@@ -4,7 +4,7 @@ namespace DiNet.GPipe.JavaBuilder.Helpers;
 
 public static class GradlewHelper
 {
-    public static async Task RunCleanBuild(string path, ApkBuildType buildType, IProcessLogger? logger = null, CancellationToken token = default)
+    public static async Task RunCleanBuild(string path, ApkBuildType buildType, IJavaProcessLogger? logger = null, CancellationToken token = default)
     {
         await RunGradlewCommand(path, "clean", logger);
         await RunGradlewCommand(path, $"assemble{buildType.ToString()} --stacktrace", logger);
@@ -17,9 +17,9 @@ public static class GradlewHelper
         string storePassword,
         string keyAlias,
         string keyPassword,
-        IProcessLogger? logger = null)
+        IJavaProcessLogger? logger = null)
     {
-        var command = 
+        var command =
                      $"assembleRelease --stacktrace " +
                      $"-Pandroid.injected.signing.store.file=\"{keystorePath}\" " +
                      $"-Pandroid.injected.signing.store.password={storePassword} " +
@@ -31,7 +31,7 @@ public static class GradlewHelper
     }
 
 
-    public static async Task RunGradlewCommand(string path, string command, IProcessLogger? logger = null, CancellationToken token = default)
+    public static async Task RunGradlewCommand(string path, string command, IJavaProcessLogger? logger = null, CancellationToken token = default)
     {
         await ProcessHelper.RunProcess(Path.Combine(path, "gradlew.bat"), command, path, logger);
     }

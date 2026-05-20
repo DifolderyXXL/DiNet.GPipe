@@ -26,7 +26,7 @@ public class GetActive : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("builds/active", async (
+        app.MapGet("builds/active", async (
             IQueryHandler<GetActiveBuildsQuery, List<ActiveBuildResponse>> handler,
             CancellationToken ct) =>
         {
@@ -41,7 +41,7 @@ public class GetLogs : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("builds/logs", async (string builderId, int maxLines,
+        app.MapGet("builds/logs", async (string builderId, int maxLines,
             IActiveBuildTracker tracker,
             CancellationToken ct) =>
         {

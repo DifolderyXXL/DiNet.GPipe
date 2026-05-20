@@ -1,13 +1,14 @@
 ﻿using System.Diagnostics;
 
 namespace DiNet.GPipe.JavaBuilder.Helpers;
+
 public static class ProcessHelper
 {
     public static async Task RunProcess(
-        string fileName, 
-        string arguments, 
-        string workingDirectory, 
-        IProcessLogger? logger = null,
+        string fileName,
+        string arguments,
+        string workingDirectory,
+        IJavaProcessLogger? logger = null,
         CancellationToken token = default)
     {
         using (var process = new Process())

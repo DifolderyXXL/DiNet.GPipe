@@ -1,3 +1,5 @@
+using DiNet.GPipe.SharedKernel.Interfaces.Logging;
+
 namespace DiNet.GPipe.Infrastructure.Building.V2;
 
 public interface IActiveBuildTracker

@@ -1,4 +1,5 @@
 using DiNet.GPipe.BuildingApplication.Apk;
+using DiNet.GPipe.SharedKernel.Interfaces.Logging;
 using DiNet.GPipe.SharedKernel.Results;
 
 namespace DiNet.GPipe.Infrastructure.Building.V2;

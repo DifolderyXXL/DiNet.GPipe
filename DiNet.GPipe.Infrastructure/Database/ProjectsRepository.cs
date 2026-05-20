@@ -21,7 +21,7 @@ public class ProjectsRepository(AppDbContext context) : IProjectsRepository
     {
         var entity = await context.Projects.FindAsync(id);
 
-        if(entity == null) return false;
+        if (entity == null) return false;
 
         context.Projects.Remove(entity);
         await context.SaveChangesAsync();
@@ -32,8 +32,8 @@ public class ProjectsRepository(AppDbContext context) : IProjectsRepository
     public async Task<List<ProjectModel>> QueryAll()
     {
         return await context.Projects
-            .Include(x=>x.WatcherSettings)
-            .Include(x=>x.BranchConfigs)
+            .Include(x => x.WatcherSettings)
+            .Include(x => x.BranchConfigs)
             .AsNoTracking()
             .ToListAsync();
     }
@@ -41,15 +41,17 @@ public class ProjectsRepository(AppDbContext context) : IProjectsRepository
     public async Task<ProjectModel?> Get(int id)
     {
         return await context.Projects
-            .Include(x=>x.BranchConfigs)
-            .Include(x=>x.WatcherSettings)
-            .Where(x=>x.Id==id)
+            .Include(x => x.BranchConfigs)
+            .Include(x => x.WatcherSettings)
+            .Include(x => x.Commits)
+            .Where(x => x.Id == id)
             .FirstOrDefaultAsync();
     }
 
     public async Task<ProjectModel?> GetByGitUrl(string gitUrl)
     {
-        return await context.Projects.FirstOrDefaultAsync(x => x.GitUrl == gitUrl);    }
+        return await context.Projects.FirstOrDefaultAsync(x => x.GitUrl == gitUrl);
+    }
 
     public async Task SaveAsync()
     {

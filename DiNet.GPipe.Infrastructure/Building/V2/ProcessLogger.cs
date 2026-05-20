@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
+using DiNet.GPipe.SharedKernel.Interfaces.Logging;
 
 namespace DiNet.GPipe.Infrastructure.Building.V2;
 

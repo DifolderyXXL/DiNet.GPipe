@@ -1,4 +1,4 @@
-namespace DiNet.GPipe.Infrastructure.Building.V2;
+namespace DiNet.GPipe.SharedKernel.Interfaces.Logging;
 
 /// <summary>
 /// Scoped logger for logging from specific builder instance / specific project

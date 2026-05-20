@@ -12,6 +12,7 @@ internal class CommitDetectedHandler(ICommitsRepository repository) : IAsyncEven
         {
             ProjectId = command.ProjectId,
             Name = command.CommitName,
+            Branch = command.BranchName,
             Hash = command.CommitHash,
             Date = command.CommitDate,
             BuildVersion = command.Version,

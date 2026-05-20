@@ -1,4 +1,4 @@
-using DiNet.GPipe.Infrastructure.Building.V2;
+using DiNet.GPipe.SharedKernel.Interfaces.Logging;
 using Microsoft.AspNetCore.SignalR;
 
 namespace DiNet.GPipe.WebApi.Hubs;

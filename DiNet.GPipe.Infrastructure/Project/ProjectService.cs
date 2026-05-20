@@ -1,4 +1,5 @@
-﻿using DiNet.GPipe.Application.Project;
+﻿using System.Security.Cryptography.X509Certificates;
+using DiNet.GPipe.Application.Project;
 using DiNet.GPipe.Domain;
 using DiNet.GPipe.SharedKernel.Extensions;
 using DiNet.GPipe.SharedKernel.Interfaces;
@@ -90,13 +91,13 @@ public class ProjectService(IServiceScopeFactory scopeFactory, IProjectWatcherMa
         using var initScope = scopeFactory.CreateScope();
         var projectsRepository = initScope.ServiceProvider.GetRequiredService<IProjectsRepository>();
 
-        var existingProject = await projectsRepository.GetByGitUrl(newGitUrl);
-        if (existingProject != null && existingProject.Id != id)
-            return ProjectErrors.ProjectAlreadyExists(newGitUrl);
-
         var project = await projectsRepository.Get(id);
         if (project == null)
             return ProjectErrors.ProjectNotFound().AsResult();
+
+        var existed = await projectsRepository.GetByGitUrl(newGitUrl);
+        if (existed != null)
+            return ProjectErrors.ProjectConflict().AsResult();
 
         project.GitUrl = newGitUrl;
         await projectsRepository.SaveAsync();

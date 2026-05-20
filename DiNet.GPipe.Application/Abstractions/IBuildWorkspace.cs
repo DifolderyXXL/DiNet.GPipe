@@ -1,4 +1,6 @@
-﻿namespace DiNet.GPipe.Infrastructure.Building;
+﻿using DiNet.GPipe.SharedKernel.Interfaces.Logging;
+
+namespace DiNet.GPipe.Infrastructure.Building;
 
 public interface IBuildWorkspace : IAsyncDisposable
 {
