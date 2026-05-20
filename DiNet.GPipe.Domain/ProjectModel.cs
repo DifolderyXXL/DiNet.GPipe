@@ -29,5 +29,5 @@ public class BranchWatcherConfig
     public int Id { get; set; }
     public int ProjectId { get; set; }
     public string BranchName { get; set; }
-    public BranchVersion VersionType { get; set; } 
+    public BranchVersion VersionType { get; set; }
 }

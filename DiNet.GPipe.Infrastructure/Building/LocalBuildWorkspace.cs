@@ -4,7 +4,8 @@ using Microsoft.Extensions.Options;
 
 namespace DiNet.GPipe.Infrastructure.Building;
 
-public class LocalBuildWorkspace(IOptions<DirectoryWorkspaceOptions> workspace, IGitRepositoryService gitRepository) : IBuildWorkspace, IAsyncDisposable
+public class LocalBuildWorkspace(IOptions<DirectoryWorkspaceOptions> workspace, IGitRepositoryService gitRepository)
+    : IBuildWorkspace, IAsyncDisposable
 {
     private Queue<string> _queuedPaths = new();
 

@@ -21,4 +21,8 @@
     <ProjectReference Include="..\DiNet.GPipe.SharedKernel\DiNet.GPipe.SharedKernel.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Building\V2\" />
+  </ItemGroup>
+
 </Project>

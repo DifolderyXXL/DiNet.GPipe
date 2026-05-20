@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DiNet.GPipe.Infrastructure.Project;
 
-public class ProjectService(IServiceScopeFactory scopeFactory) : IProjectService
+public class ProjectService(IServiceScopeFactory scopeFactory, IProjectWatcherManager watcherManager) : IProjectService
 {
     public async Task<Result<ProjectModel>> CreateProject(WatcherRequest request, CancellationToken ct)
     {
@@ -100,6 +100,8 @@ public class ProjectService(IServiceScopeFactory scopeFactory) : IProjectService
 
         project.GitUrl = newGitUrl;
         await projectsRepository.SaveAsync();
+
+        await watcherManager.UpdateGitUrlAsync(project.Id, newGitUrl, ct);
 
         return Result.Success();
     }

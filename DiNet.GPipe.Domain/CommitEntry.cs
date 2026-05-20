@@ -6,6 +6,7 @@ public class CommitEntry
 
     public int ProjectId { get; set; }
     public string Hash { get; set; } = null!;
+    public string Branch { get; set; } = null!;
     public string Name { get; set; } = null!;
     public DateTime Date { get; set; }
     public BuildVersion BuildVersion { get; set; } = null!;

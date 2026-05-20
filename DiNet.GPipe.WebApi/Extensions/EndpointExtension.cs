@@ -1,4 +1,6 @@
-﻿using DiNet.GPipe.WebApi.Endpoints;
+﻿using DiNet.GPipe.SharedKernel.Results;
+using DiNet.GPipe.WebApi.Endpoints;
+using DiNet.GPipe.WebApi.Infrastructure;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Reflection;
 
@@ -32,5 +34,18 @@ public static class EndpointExtension
         }
 
         return app;
+    }
+}
+
+public static class WebResultExtensions
+{
+    public static IResult ToWebResult(this Result result)
+    {
+        return result.Match(() => Results.Ok(), CustomResults.Problem);
+    }
+
+    public static IResult ToWebResult<T>(this Result<T> result)
+    {
+        return result.Match(Results.Ok, CustomResults.Problem);
     }
 }

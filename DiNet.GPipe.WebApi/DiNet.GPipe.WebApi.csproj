@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -23,6 +23,11 @@
     <ProjectReference Include="..\DiNet.GPipe.Infrastructure\DiNet.GPipe.Infrastructure.csproj" />
     <ProjectReference Include="..\DiNet.GPipe.ServiceDefaults\DiNet.GPipe.ServiceDefaults.csproj" />
     <ProjectReference Include="..\DiNet.GPipe.SharedKernel\DiNet.GPipe.SharedKernel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Endpoints\Builds\" />
+    <Folder Include="Hubs\" />
   </ItemGroup>
 
 </Project>

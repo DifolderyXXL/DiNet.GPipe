@@ -5,6 +5,7 @@ using DiNet.GPipe.BuildingApplication.Apk;
 using DiNet.GPipe.BuildingApplication.Handlers;
 using DiNet.GPipe.BuildingApplication.Infrastructure;
 using DiNet.GPipe.Infrastructure.Building;
+using DiNet.GPipe.Infrastructure.Building.V2;
 using DiNet.GPipe.Infrastructure.Database;
 using DiNet.GPipe.Infrastructure.DataRepositories;
 using DiNet.GPipe.Infrastructure.Git;
@@ -141,7 +142,7 @@ public static class DependencyInjection
             return services;
         }
 
-        IServiceCollection UseLocalIsolatedBuilding(IConfiguration configuration) 
+        IServiceCollection UseLocalIsolatedBuilding(IConfiguration configuration)
         {
 
             var workspaceSection = configuration.GetSection(nameof(DirectoryWorkspaceOptions));
@@ -152,6 +153,11 @@ public static class DependencyInjection
 
             services.AddScoped<IIsolatedBuilder, IsolatedSpaceBuilder>();
             services.AddScoped<IBuildWorkspace, LocalBuildWorkspace>();
+
+
+            services.AddTransient<IBuilderUnit, BuilderUnit>();
+            services.AddSingleton<IBuildQueue, ChannelBuildQueue>();
+            services.AddSingleton<IActiveBuildTracker, InMemoryActiveBuildTracker>();
 
             return services;
         }

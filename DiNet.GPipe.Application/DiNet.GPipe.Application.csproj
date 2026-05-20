@@ -20,6 +20,9 @@
   <ItemGroup>
     <Folder Include="EventHandlers\Abstraction\" />
     <Folder Include="Handlers\Activity\" />
+    <Folder Include="Handlers\Builds\" />
+    <Folder Include="Handlers\Builds\Enqueue\" />
+    <Folder Include="Handlers\Builds\GetActive\" />
     <Folder Include="Handlers\Projects\Update\" />
   </ItemGroup>
 

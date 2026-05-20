@@ -66,6 +66,18 @@ public class ProjectWatcherManager(IWorkerFactory workerFactory) : IProjectWatch
         await CreateOrUpdateWatcherAsync(newParams, ct);
     }
 
+    public async Task UpdateGitUrlAsync(int id, string gitUrl, CancellationToken ct)
+    {
+        if (!_watchers.TryGetValue(id, out var entry))
+            throw new InvalidOperationException("Watcher not found");
+
+        var newParams = new WatcherParameters(
+            entry.Watcher.ProjectId,
+            entry.Watcher.Config with { GitUrl = gitUrl }
+        );
+        await CreateOrUpdateWatcherAsync(newParams, ct);
+    }
+
     public async Task UpdateIntervalAsync(int id, TimeSpan interval, CancellationToken ct)
     {
         if (!_watchers.TryGetValue(id, out var entry))

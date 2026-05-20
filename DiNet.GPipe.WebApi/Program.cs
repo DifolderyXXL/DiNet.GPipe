@@ -3,6 +3,8 @@ using DiNet.GPipe.Application.Workers;
 using DiNet.GPipe.Infrastructure;
 using DiNet.GPipe.Infrastructure.Database;
 using DiNet.GPipe.WebApi.Extensions;
+using DiNet.GPipe.WebApi.Hubs;
+using DiNet.GPipe.WebApi.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -12,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
+builder.Services.AddHostedService<BuildQueueProcessor>();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -24,9 +27,11 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddSignalR();
 
 var app = builder.Build();
+
+app.MapHub<BuildLogHub>("/buildlog");
 
 if (app.Environment.IsDevelopment())
 {

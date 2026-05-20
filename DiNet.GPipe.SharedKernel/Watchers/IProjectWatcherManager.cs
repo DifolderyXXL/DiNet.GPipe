@@ -10,6 +10,7 @@ public interface IProjectWatcherManager
     public Task<Watcher?> GetWatcherAsync(int id, CancellationToken ct);
     public IEnumerable<Watcher> EnumerateAllWatchers();
     public Task UpdateIntervalAsync(int id, TimeSpan interval, CancellationToken ct);
+    public Task UpdateGitUrlAsync(int id, string gitUrl, CancellationToken ct);
     public Task UpdateBranches(int id, List<BranchConfig> branches, CancellationToken ct);
 }
 
