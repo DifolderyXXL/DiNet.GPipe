@@ -1,0 +1,29 @@
+﻿@inject IJSRuntime JS
+
+<div @ref="consoleElement" class="d-flex flex-column rounded font-monospace"
+     style="gap: 0.15rem; max-height: 200px; overflow-y: auto; padding: 0.5rem; background-color: #1a1a1a; border: 1px solid #333; color: #d4d4d4; font-size: 0.75rem; line-height: 1.2;">
+    @foreach (var log in LogLines)
+    {
+        <span style="white-space: pre-wrap; word-break: break-all;">@log</span>
+    }
+</div>
+
+@code {
+    private ElementReference consoleElement;
+
+    [Parameter] public IEnumerable<string> LogLines { get; set; } = new List<string>();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JS.InvokeVoidAsync("Interop.scrollToBottom", consoleElement);
+    }
+}
+
+<script>
+    window.Interop = window.Interop || {};
+    window.Interop.scrollToBottom = function (element) {
+        if (element) {
+            element.scrollTop = element.scrollHeight;
+        }
+    };
+</script>

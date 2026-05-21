@@ -39,7 +39,18 @@ public static class ProcessHelper
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
 
-            await process.WaitForExitAsync(token);
+            try
+            {
+                await process.WaitForExitAsync(token);
+            }
+            catch (OperationCanceledException)
+            {
+                if (!process.HasExited)
+                {
+                    process.Kill(entireProcessTree: true);
+                }
+                throw;
+            }
         }
     }
 }

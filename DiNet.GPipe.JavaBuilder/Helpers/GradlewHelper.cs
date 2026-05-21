@@ -6,8 +6,8 @@ public static class GradlewHelper
 {
     public static async Task RunCleanBuild(string path, ApkBuildType buildType, IJavaProcessLogger? logger = null, CancellationToken token = default)
     {
-        await RunGradlewCommand(path, "clean", logger);
-        await RunGradlewCommand(path, $"assemble{buildType.ToString()} --stacktrace", logger);
+        await RunGradlewCommand(path, "clean --no-daemon", logger);
+        await RunGradlewCommand(path, $"assemble{buildType.ToString()} --stacktrace --no-daemon", logger);
     }
 
 
@@ -20,13 +20,13 @@ public static class GradlewHelper
         IJavaProcessLogger? logger = null)
     {
         var command =
-                     $"assembleRelease --stacktrace " +
+                     $"assembleRelease --stacktrace --no-daemon " +
                      $"-Pandroid.injected.signing.store.file=\"{keystorePath}\" " +
                      $"-Pandroid.injected.signing.store.password={storePassword} " +
                      $"-Pandroid.injected.signing.key.alias={keyAlias} " +
                      $"-Pandroid.injected.signing.key.password={keyPassword}";
 
-        await RunGradlewCommand(path, "clean", logger);
+        await RunGradlewCommand(path, "clean --no-daemon", logger);
         await RunGradlewCommand(path, command, logger);
     }
 

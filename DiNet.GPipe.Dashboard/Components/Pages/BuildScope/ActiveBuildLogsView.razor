@@ -1,5 +1,6 @@
 ﻿@using System.Collections.Concurrent
 @using System.ComponentModel.DataAnnotations
+@using BlazorBootstrap
 @using DiNet.GPipe.Dashboard.Api
 @using DiNet.GPipe.Dashboard.Models
 @using Microsoft.AspNetCore.SignalR.Client
@@ -8,18 +9,15 @@
 @inject IHttpClientFactory HttpClientFactory
 @inject IHttpMessageHandlerFactory HandlerFactory
 @implements IAsyncDisposable
+@inject ILogger<ActiveBuildLogsView> logger
 
 <h3>ActiveBuildLogsView</h3>
 
-<div class="d-flex flex-column"
-     style="gap: 0.5rem; max-height: 400px; overflow-y: auto; padding: 1rem; border: 1px solid #ccc; background-color: #1e1e1e; color: #fff;">
-    @foreach (var log in LogLines)
-    {
-        <span style="font-family: monospace; white-space: pre-wrap;">@log</span>
-    }
-</div>
+<ConsoleView LogLines="LogLines" />
 
 @code {
+    [Inject] protected ToastService ToastService { get; set; } = default!;
+
     [Inject] private HubConnection _hubConnection { get; set; }
 
     [Parameter, EditorRequired]
@@ -27,42 +25,84 @@
 
     public readonly ConcurrentQueue<string> LogLines = new();
 
-    protected override async Task OnInitializedAsync()
+    private string? _previousBuildId;
+    private bool _isEventSubscribed = false;
+    protected override async Task OnParametersSetAsync()
     {
-        if (Build == null)
+        if (Build == null) return;
+
+        if (Build.BuildId == _previousBuildId) return;
+
+        ToastService.Notify(new(ToastType.Primary, Build.BuildId));
+        logger.LogDebug($"{Build.BuildId}");
+
+        if (!_isEventSubscribed)
         {
-            return;
-        }
-
-        var result = await BuildingApi.GetBuildLogs(Build.BuildId, 1000);
-
-        foreach (var line in result)
-            LogLines.Enqueue(line);
-
-        _hubConnection.On<string>("ReceiveLog", async (message) =>
-        {
-            await InvokeAsync(() =>
+            _hubConnection.On<string>("ReceiveLog", async (message) =>
             {
-                LogLines.Enqueue(message);
-                StateHasChanged();
+                await InvokeAsync(() =>
+                {
+                    LogLines.Enqueue(message);
+                    StateHasChanged();
+                });
             });
-        });
-
-        await _hubConnection.StartAsync();
-
-        if (_hubConnection.State == HubConnectionState.Connected)
-        {
-            await _hubConnection.InvokeAsync("JoinGroup", Build.BuildId);
+            _isEventSubscribed = true;
         }
+
+
+        try
+        {
+
+            if (_hubConnection.State == HubConnectionState.Disconnected)
+            {
+                await _hubConnection.StartAsync();
+            }
+
+            if (_hubConnection.State == HubConnectionState.Connected)
+            {
+                if (!string.IsNullOrEmpty(_previousBuildId))
+                {
+                    await _hubConnection.InvokeAsync(methodName: "LeaveGroup", _previousBuildId);
+                }
+
+                var result = await BuildingApi.GetBuildLogs(Build.BuildId, 1000);
+
+                LogLines.Clear();
+
+                foreach (var line in result)
+                    LogLines.Enqueue(line);
+
+                await _hubConnection.InvokeAsync("JoinGroup", Build.BuildId);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ERROR] Не удалось запустить SignalR для билда {Build.BuildId}: {ex.Message}");
+        }
+
+
+
+        _previousBuildId = Build.BuildId;
     }
 
     public async ValueTask DisposeAsync()
     {
         if (_hubConnection is not null)
         {
-            await _hubConnection.StopAsync();
-            await _hubConnection.DisposeAsync();
-            Console.WriteLine("Disposed " + Build.BuildId);
+            try
+            {
+                if (_hubConnection.State == HubConnectionState.Connected && !string.IsNullOrEmpty(_previousBuildId))
+                {
+                    await _hubConnection.InvokeAsync("LeaveGroup", _previousBuildId);
+                }
+
+                
+                await _hubConnection.StopAsync();
+                Console.WriteLine("Disposed " + Build.BuildId);
+            }
+            catch (Exception ex)
+            {
+            }
         }
     }
 }

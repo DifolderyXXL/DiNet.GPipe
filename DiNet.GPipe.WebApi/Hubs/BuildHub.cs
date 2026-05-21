@@ -15,4 +15,9 @@ public class BuildLogHub : Hub
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, builderId);
     }
+
+    public async Task LeaveGroup(string builderId)
+    {
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, builderId);
+    }
 }
