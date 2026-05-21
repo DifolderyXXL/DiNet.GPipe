@@ -2,6 +2,7 @@ using Blazored.Toast;
 using DiNet.GPipe.Dashboard.Api;
 using DiNet.GPipe.Dashboard.Components;
 using DiNet.GPipe.Dashboard.Models;
+using Refit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,11 +14,10 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddScoped<AppState>();
 
-//builder.Services.AddSingleton<IWebApi, MockWebApi>();
-builder.Services.AddHttpClient<IWebApi, WebApi>(client =>
-{
-    client.BaseAddress = new("https+http://dinet-gpipe-webapi");
-});
+builder.Services
+    .AddRefitClient<IProjectApi>()
+    .AddRefitClient<IWatcherApi>()
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri("https+http://dinet-gpipe-webapi"));
 
 builder.Services.AddBlazorBootstrap();
 

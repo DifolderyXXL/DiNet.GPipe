@@ -1,6 +1,6 @@
 ﻿@using DiNet.GPipe.Application.Handlers.Commits.Get
 @using DiNet.GPipe.Dashboard.Api
-@inject IWebApi Api
+@inject IProjectApi Api
 
 <div class="card shadow-sm">
     <div class="card-header bg-white">
@@ -20,7 +20,8 @@
                 </div>
                 <div class="border-bottom">
                     <label class="text-muted small d-block">Version</label>
-                    <span class="badge bg-secondary"> @($"{commit.BuildVersion.release}.{commit.BuildVersion.beta}.{commit.BuildVersion.alpha}")
+                    <span class="badge bg-secondary">
+                        @($"{commit.BuildVersion.release}.{commit.BuildVersion.beta}.{commit.BuildVersion.alpha}")
                     </span>
                 </div>
             }
@@ -36,8 +37,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _commits = await Api.GetProjectCommits(ProjectId, false, default);
-
-        //_commits = [new() { Name = "c1", BuildVersion = new(1, 2, 3), Hash = "asd123" }, new(){ Name = "c3", BuildVersion = new(1, 2, 3), Hash = "asd123" }];
+        _commits = await Api.GetProjectCommits(ProjectId, false);
     }
 }
