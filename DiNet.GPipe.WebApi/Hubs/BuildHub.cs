@@ -11,4 +11,8 @@ public interface IBuildLogHub
 
 public class BuildLogHub : Hub
 {
+    public async Task JoinGroup(string builderId)
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, builderId);
+    }
 }

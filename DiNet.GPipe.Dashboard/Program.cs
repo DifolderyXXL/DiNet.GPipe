@@ -1,7 +1,7 @@
-using Blazored.Toast;
 using DiNet.GPipe.Dashboard.Api;
 using DiNet.GPipe.Dashboard.Components;
 using DiNet.GPipe.Dashboard.Models;
+using Microsoft.AspNetCore.SignalR.Client;
 using Refit;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,12 +12,27 @@ builder.AddServiceDefaults();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddScoped<AppState>();
+builder.Services.AddScoped(typeof(IState<>), typeof(GenericState<>));
 
 builder.Services
     .AddRefitClient<IProjectApi>()
+    .AddRefitClient<IBuildingApi>()
     .AddRefitClient<IWatcherApi>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri("https+http://dinet-gpipe-webapi"));
+builder.Services.AddHttpClient("WebApiServer", c => c.BaseAddress = new("http://dinet-gpipe-webapi"))
+    .AddServiceDiscovery();
+
+builder.Services.AddTransient(sp =>
+{
+    var handler = sp.GetRequiredService<IHttpMessageHandlerFactory>().CreateHandler("WebApiServer");
+
+    return new HubConnectionBuilder()
+        .WithUrl("http://dinet-gpipe-webapi/buildlog", options => options.HttpMessageHandlerFactory = _ => handler)
+        .WithAutomaticReconnect()
+        .Build();
+});
+
+
 
 builder.Services.AddBlazorBootstrap();
 

@@ -1,5 +1,6 @@
 using System;
 using DiNet.GPipe.Application.Handlers.Watchers;
+using DiNet.GPipe.Infrastructure.Building.V2;
 using Refit;
 
 namespace DiNet.GPipe.Dashboard.Api;

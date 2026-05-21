@@ -1,6 +1,9 @@
-﻿@using DiNet.GPipe.Application.Handlers.Commits.Get
+﻿@using BlazorBootstrap
+@using DiNet.GPipe.Application.Handlers.Commits.Get
 @using DiNet.GPipe.Dashboard.Api
 @inject IProjectApi Api
+@inject IBuildingApi BuildingApi
+@inject ToastService ToastService
 
 <div class="card shadow-sm">
     <div class="card-header bg-white">
@@ -12,18 +15,24 @@
         {
             @foreach (var commit in _commits)
             {
-                <div>
-                    <span class="fw-semibold text-dark"> @commit.Name </span>
+                var commitRef = commit;
+                <div class="d-flex align-items-center">
+                    <div>
+                        <span class="fw-semibold text-dark"> @commit.Name </span>
+                        <span class="fw-semibold small text-dark"> @commit.Hash </span>
+
+                        <label class="text-muted small d-block">Version</label>
+                        <span class="badge bg-secondary">
+                            @($"{commit.BuildVersion.release}.{commit.BuildVersion.beta}.{commit.BuildVersion.alpha}")
+                        </span>
+                    </div>
+
+                    <button type="button" class="btn btn-sm btn-outline-success" @onclick="() => EnqueueBuild(commitRef)">
+                        <i class="bi bi-archive-fill"></i>
+                    </button>
                 </div>
-                <div>
-                    <span class="fw-semibold text-dark"> @commit.Hash </span>
-                </div>
-                <div class="border-bottom">
-                    <label class="text-muted small d-block">Version</label>
-                    <span class="badge bg-secondary">
-                        @($"{commit.BuildVersion.release}.{commit.BuildVersion.beta}.{commit.BuildVersion.alpha}")
-                    </span>
-                </div>
+
+                <div class="border-bottom" />
             }
         }
     </nav>
@@ -38,5 +47,18 @@
     protected override async Task OnInitializedAsync()
     {
         _commits = await Api.GetProjectCommits(ProjectId, false);
+    }
+
+    private async Task EnqueueBuild(CommitResponse commit)
+    {
+        var result = await BuildingApi.EnqueueBuild(commit.ProjectId, commit.Hash);
+        if (result.IsSuccessStatusCode)
+        {
+            ToastService.Notify(new(ToastType.Success, $"Enqueued with {result.StatusCode}"));
+        }
+        else
+        {
+            ToastService.Notify(new(ToastType.Danger, $"Error {result.StatusCode}"));
+        }
     }
 }

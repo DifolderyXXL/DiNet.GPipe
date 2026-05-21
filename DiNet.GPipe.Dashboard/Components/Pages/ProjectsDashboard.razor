@@ -10,7 +10,7 @@
 @implements IDisposable
 
 @inject IProjectApi Api
-@inject AppState State
+@inject IState<ProjectState> State
 
 @rendermode InteractiveServer
 
@@ -71,8 +71,8 @@
                 {
                     <div class="mb-1">
                         <button
-                            class="btn @(State.SelectedProject?.Id == project.Id ? "btn-primary" : "btn-outline-primary") w-100 text-start"
-                            @onclick="() => State.SelectProject(project)">
+                            class="btn @(State.Selected?.Id == project.Id ? "btn-primary" : "btn-outline-primary") w-100 text-start"
+                            @onclick="() => State.Select(project)">
                             @project.Name
                         </button>
                     </div>
@@ -82,17 +82,16 @@
     </div>
 
     <div class="flex-grow-1" style="overflow-y: auto; min-height: 0;">
-        @if (State.SelectedProject == null)
+        @if (State.Selected == null)
         {
             <div class="alert alert-info">Выберите проект из списка слева.</div>
         }
         else
         {
-            var instance = State.SelectedProject;
-            <ProjectModelView Project="@State.SelectedProject"
-                              RemoveRequested="@(async () => await RemoveProject(instance.Id))" />
+            var instance = State.Selected;
+            <ProjectModelView Project="@State.Selected" RemoveRequested="@(async () => await RemoveProject(instance.Id))" />
 
-            <ProjectCommitsModelView ProjectId="@State.SelectedProject.Id" />
+            <ProjectCommitsModelView ProjectId="@State.Selected.Id" />
         }
     </div>
 </div>
@@ -162,7 +161,7 @@
 
             
             _projects = await FetchProjects();
-            State.SelectProject(_projects.FirstOrDefault(x => x.Name == Project.Name));
+            State.Select(_projects.FirstOrDefault(x => x.Name == Project.Name));
         }
         catch (Exception ex)
         {
@@ -177,7 +176,7 @@
         await Api.DeleteProject(projectId);
 
         _projects = await FetchProjects();
-        State.SelectProject(null);
+        State.Select(null);
 
         StateHasChanged();
     }

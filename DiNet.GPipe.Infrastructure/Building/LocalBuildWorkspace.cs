@@ -15,7 +15,7 @@ public class LocalBuildWorkspace(IOptions<DirectoryWorkspaceOptions> workspace, 
         {
             while (_queuedPaths.TryDequeue(out var c))
             {
-                Directory.Delete(c, true);
+                DirectoryExtension.ForceDeleteDirectory(c);
             }
         }, ct);
     }
@@ -24,10 +24,7 @@ public class LocalBuildWorkspace(IOptions<DirectoryWorkspaceOptions> workspace, 
     {
         while (_queuedPaths.TryDequeue(out var path))
         {
-            if (Directory.Exists(path))
-            {
-                Directory.Delete(path, true);
-            }
+            DirectoryExtension.ForceDeleteDirectory(path);
         }
     }
 
@@ -38,7 +35,11 @@ public class LocalBuildWorkspace(IOptions<DirectoryWorkspaceOptions> workspace, 
 
     public async Task<string> PrepareWorkspaceAsync(string repositoryUrl, string commitHash, CancellationToken cancellationToken)
     {
-        var dir = Path.Combine(workspace.Value.WorkspaceDirectory, "Isolated", commitHash);
+        var dir = Path.Join(workspace.Value.WorkspaceDirectory, "Isolated", commitHash);
+
+        // Clean directory if messy TODO: Use directories with BuildID!
+        DirectoryExtension.ForceDeleteDirectory(dir);
+
         _queuedPaths.Enqueue(dir);
 
         await gitRepository.EnsureWorktreeCommit(repositoryUrl, dir, commitHash, cancellationToken);
@@ -46,3 +47,29 @@ public class LocalBuildWorkspace(IOptions<DirectoryWorkspaceOptions> workspace, 
         return dir;
     }
 }
+
+public static class DirectoryExtension
+{
+    public static void ForceDeleteDirectory(string directory)
+    {
+        if (!Directory.Exists(directory)) return;
+
+        File.SetAttributes(directory, FileAttributes.Normal);
+
+        string[] files = Directory.GetFiles(directory);
+        foreach (var file in files)
+        {
+            File.SetAttributes(file, FileAttributes.Normal);
+            File.Delete(file);
+        }
+
+        string[] dirs = Directory.GetDirectories(directory);
+        foreach (string dir in dirs)
+        {
+            ForceDeleteDirectory(dir);
+        }
+
+        Directory.Delete(directory, false);
+    }
+}
+

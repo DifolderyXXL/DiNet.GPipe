@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ANM.Blazored.Toast" Version="0.1.1" />
     <PackageReference Include="Blazor.Bootstrap" Version="3.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Refit" Version="10.1.6" />
     <PackageReference Include="Refit.HttpClientFactory" Version="10.1.6" />
@@ -18,6 +18,10 @@
   <ItemGroup>
     <ProjectReference Include="..\DiNet.GPipe.Application\DiNet.GPipe.Application.csproj" />
     <ProjectReference Include="..\DiNet.GPipe.ServiceDefaults\DiNet.GPipe.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Components\Pages\BuildScope\" />
   </ItemGroup>
 
 </Project>

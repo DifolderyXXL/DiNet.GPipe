@@ -22,7 +22,7 @@ public class SignalRForwardingLogger(
     {
         processLogger.Log(message);
 
-        _ = hubContext.Clients.Group($"build-{buildId}")
+        _ = hubContext.Clients.Group(buildId)
             .SendAsync("ReceiveLog", message);
     }
 

@@ -9,6 +9,7 @@ public enum ActiveStateCommand
 {
     Activate,
     Diactivate
+
 }
 
 public record ChangeActiveWatcherCommand(int ProjectId, ActiveStateCommand ActiveState) : ICommand;
@@ -17,7 +18,7 @@ public class ChangeActiveWatcher(IWatcherOrchestrator watcherOrchestrator) : ICo
     public async Task<Result> Handle(ChangeActiveWatcherCommand command, CancellationToken ct)
     {
         return await watcherOrchestrator.ChangeActiveAsync(
-            command.ProjectId,  
+            command.ProjectId,
             command.ActiveState == ActiveStateCommand.Activate,
             ct);
     }

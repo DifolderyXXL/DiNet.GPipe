@@ -1,0 +1,74 @@
+﻿@page "/building"
+@using DiNet.GPipe.Application.Handlers.Builds.GetActive
+@using DiNet.GPipe.Dashboard.Api
+@using DiNet.GPipe.Dashboard.Components.Pages.BuildScope
+@using DiNet.GPipe.Dashboard.Models
+
+@inject IBuildingApi BuildingApi
+@inject IState<ActiveBuildState> State
+
+<h3>BuildingDashboard</h3>
+
+
+<div class="d-flex" style=" gap: 2rem; min-height: 0;">
+    <div class="project-sidebar border-end" style="width: 200px; min-height: 0; display: flex; flex-direction: column;">
+        <nav class="nav flex-column p-2">
+            @if (_activeBuilds != null)
+            {
+                @foreach (var project in _activeBuilds)
+                {
+                    <div class="mb-1">
+                        <button
+                            class="btn @(State.Selected?.BuildId == project.BuildId ? "btn-primary" : "btn-outline-primary") w-100 text-start"
+                            @onclick="() => State.Select(project)">
+
+                            <span class="d-block fw-bold">@project.ProjectName</span>
+
+                            <span class="d-block small opacity-75">ID: @project.BuildId</span>
+
+                            <span class="d-block text-muted" style="font-size: 0.8rem;">
+                                @project.StartedAt.ToString("g")
+                            </span>
+                        </button>
+                    </div>
+                }
+            }
+        </nav>
+    </div>
+
+    <div class="flex-grow-1" style="overflow-y: auto; min-height: 0;">
+        @if (State.Selected == null)
+        {
+            <div class="alert alert-info">Выберите проект из списка слева.</div>
+        }
+        else
+        {
+            var instance = State.Selected;
+
+            <ActiveBuildLogsView Build=instance />
+        }
+    </div>
+</div>
+
+@code {
+    private ActiveBuildState[] _activeBuilds = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var builds = await BuildingApi.GetActiveBuilds();
+        _activeBuilds = builds.Select(x => new ActiveBuildState(
+            buildId: x.BuildId,
+            projectId: x.ProjectId,
+            projectName: x.ProjectName,
+            state: x.State,
+            startedAt: x.StartedAt
+        )).ToArray();
+
+        State.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= StateHasChanged;
+    }
+}

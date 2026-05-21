@@ -34,7 +34,20 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials()
+              .SetIsOriginAllowed(origin => true);
+    });
+});
+
 var app = builder.Build();
+
+app.UseCors();
 
 app.MapHub<BuildLogHub>("/buildlog");
 
