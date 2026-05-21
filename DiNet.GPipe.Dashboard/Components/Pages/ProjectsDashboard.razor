@@ -29,6 +29,24 @@
         width: 100%;
     }
 
+    .project-sidebar nav,
+    .project-sidebar .mb-1 {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .project-sidebar .btn,
+    .project-sidebar .nav-link {
+        display: flex;
+        width: 100%;
+        min-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
     .project-sidebar .btn,
     .project-sidebar .nav-link {
         display: flex;
@@ -50,6 +68,20 @@
         min-width: 0;
     }
 
+    .project-sidebar .btn span:last-child,
+    .project-sidebar .nav-link span:last-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .project-sidebar .btn .bi,
+    .project-sidebar .nav-link .bi {
+        flex-shrink: 0;
+    }
+
     .project-sidebar .btn .bi,
     .project-sidebar .nav-link .bi {
         flex-shrink: 0;
@@ -63,6 +95,7 @@
                 <i class="bi bi-folder-fill me-2"></i> Add new
             </button>
 
+            <div class="my-2 border-bottom" />
             <div class="my-2 border-bottom" />
 
             @if (_projects != null)
@@ -99,18 +132,20 @@
 
 <div class="modal fade @(showCreating ? "show d-block" : "")" id="createProjectModal" tabindex="-1"
      style="@(showCreating ? "background-color: rgba(0,0,0,0.5);" : "")" @onclick:stopPropagation="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Create New Project</h5>
-                <button type="button" class="btn-close" @onclick="CloseCreateProjectForm"></button>
-            </div>
-            <div class="modal-body">
-                <CreateProjectModelView OnSubmitSuccess="OnProjectCreated" />
+    <div class="modal fade @(showCreating ? "show d-block" : "")" id="createProjectModal" tabindex="-1"
+         style="@(showCreating ? "background-color: rgba(0,0,0,0.5);" : "")" @onclick:stopPropagation="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New Project</h5>
+                    <button type="button" class="btn-close" @onclick="CloseCreateProjectForm"></button>
+                </div>
+                <div class="modal-body">
+                    <CreateProjectModelView OnSubmitSuccess="OnProjectCreated" />
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
 @code {
@@ -148,21 +183,24 @@
                    Project.BranchConfigs.Select(x => new BranchConfig(x.BranchName, x.VersionType)).ToList(),
                    Project.PollInterval
                )
+               )
             );
 
             if (status.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                ToastService.Notify(new(ToastType.Success, $"Project created"));
-            }
-            else
-            {
-                ToastService.Notify(new(ToastType.Info, $"Project create status: {status}"));
-            }
+                if (status.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    ToastService.Notify(new(ToastType.Success, $"Project created"));
+                }
+                else
+                {
+                    ToastService.Notify(new(ToastType.Info, $"Project create status: {status}"));
+                }
 
             
             _projects = await FetchProjects();
             State.Select(_projects.FirstOrDefault(x => x.Name == Project.Name));
         }
+        catch (Exception ex)
         catch (Exception ex)
         {
             ToastService.Notify(new(ToastType.Danger, ex.Message));
@@ -173,6 +211,7 @@
 
     async Task RemoveProject(int projectId)
     {
+        await Api.DeleteProject(projectId);
         await Api.DeleteProject(projectId);
 
         _projects = await FetchProjects();
@@ -197,6 +236,7 @@
 
     private async Task<ProjectState[]> FetchProjects()
     {
+        return (await Api.GetProjects())
         return (await Api.GetProjects())
                 .Select(x => new ProjectState(x.Id, x.Name, x.GitUrl, x.IsActive, x.PollInterval, x.Branches))
                 .ToArray();
