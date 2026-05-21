@@ -106,7 +106,8 @@
 
 
 @code {
-    [Inject] protected IWebApi Api { get; set; }
+    [Inject] protected IProjectApi Api { get; set; }
+    [Inject] protected IWatcherApi WatcherApi { get; set; }
 
     [Parameter]
     public EventCallback RemoveRequested { get; set; }
@@ -130,11 +131,11 @@
 
     private async Task SaveProjectName(string name)
     {
-        await Api.UpdateProjectName(Project.Id, name, default);
+        await Api.UpdateProjectName(Project.Id, name);
     }
     private async Task SaveGitUrl(string name)
     {
-        await Api.UpdateProjectGitUrl(Project.Id, name, default);
+        await Api.UpdateProjectGitUrl(Project.Id, name);
     }
 
     public bool _isAddingNewBranch = false;
@@ -163,7 +164,7 @@
         _branchForm = null;
         _isAddingNewBranch = false;
 
-        await Api.AddBranch(Project.Id, branch, default);
+        await Api.AddBranch(Project.Id, branch);
         Project.Branches.Add(new(branch.BranchName, branch.VersionType));
 
         StateHasChanged();
@@ -177,7 +178,7 @@
         var index = Project.Branches.FindIndex(x => x.Name == targetName);
         Project.Branches[index] = branch;
 
-        await Api.UpdateBranch(Project.Id, targetName, new(branch.Name, branch.version), default);
+        await Api.UpdateBranch(Project.Id, targetName, new(branch.Name, branch.version));
 
         StateHasChanged();
     }
@@ -187,7 +188,7 @@
         if (Project == null)
             return;
 
-        await Api.RemoveBranch(Project.Id, branch.Name, default);
+        await Api.RemoveBranch(Project.Id, branch.Name);
         Project.Branches.RemoveAll(x => x.Name == branch.Name);
 
         StateHasChanged();
@@ -205,7 +206,7 @@
             return;
 
         Project.IsActive = active;
-        await Api.WatcherChangeActive(Project.Id, active, default);
+        await WatcherApi.WatcherChangeActive(Project.Id, active);
 
         StateHasChanged();
     }

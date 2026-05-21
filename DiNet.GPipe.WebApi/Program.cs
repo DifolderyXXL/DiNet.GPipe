@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using DiNet.GPipe.Application;
 using DiNet.GPipe.Application.Workers;
 using DiNet.GPipe.Infrastructure;
@@ -28,6 +29,10 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 var app = builder.Build();
 
